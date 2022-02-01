@@ -2620,13 +2620,8 @@ ul.breadcrumb li:last-child {
     color: #eee;
   }
 }
-.gt-header a,
-.gt-comments a,
-.gt-popup a {
-  border-bottom: 0;
-}
-.gt-container .gt-popup .gt-action.is--active::before {
-  top: 0.7em;
+.utterances {
+  max-width: unset;
 }
 .use-motion .animated {
   animation-fill-mode: none;
@@ -2885,7 +2880,7 @@ hr {
   vertical-align: middle;
 }
 .links-of-author a::before {
-  background: #ffa3fe;
+  background: #b0558f;
   display: inline-block;
   margin-right: 3px;
   transform: translateY(-2px);
