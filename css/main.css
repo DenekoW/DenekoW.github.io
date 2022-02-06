@@ -2957,7 +2957,7 @@ hr {
   vertical-align: middle;
 }
 .links-of-author a::before {
-  background: #79f178;
+  background: #ff133b;
   display: inline-block;
   margin-right: 3px;
   transform: translateY(-2px);
@@ -2982,4 +2982,13 @@ hr {
 }
 .sub-menu .menu-item {
   display: inline-block;
+}
+body {
+  color: var(--text-color);
+  font-family: Lato, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 1em;
+  line-height: 2;
+  min-height: 100%;
+  position: relative;
+  transition: padding 0.2s ease-in-out;
 }
