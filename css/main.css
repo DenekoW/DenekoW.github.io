@@ -3073,7 +3073,7 @@ hr {
   vertical-align: middle;
 }
 .links-of-author a::before {
-  background: #fb60b0;
+  background: #ffffc8;
   display: inline-block;
   margin-right: 3px;
   transform: translateY(-2px);
@@ -3107,4 +3107,17 @@ body {
   min-height: 100%;
   position: relative;
   transition: padding 0.2s ease-in-out;
+  background: url("/images/background.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: 50% 50%;
+  background-size: 100% 100%;
+  background-size: cover;
+  -webkit-background-size: cover;
+  -o-background-size: cover;
+  -moz-background-size: cover;
+  -ms-background-size: cover;
+}
+.post-block {
+  background: rgba(255,255,255,0.7) none repeat scroll !important;
 }
