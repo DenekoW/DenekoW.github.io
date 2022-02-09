@@ -20,7 +20,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"denekow.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.9.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"slideUpIn#fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"denekow.github.io","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.9.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"slideUpIn#fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 <meta name="description" content="记录配置博客时遇到的问题">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hexo+Next搭建个人博客的踩坑之路（持续更新）">
@@ -147,7 +147,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E9%A1%B5%E6%90%AD%E5%BB%BA"><span class="nav-number">1.</span> <span class="nav-text">网页搭建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AA%E6%80%A7%E5%8C%96%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">个性化配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Next%E7%9A%84%E6%96%87%E6%A1%A3"><span class="nav-number">2.1.</span> <span class="nav-text">Next的文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#url%E8%AE%BE%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">url设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%E9%97%AE%E9%A2%98"><span class="nav-number">2.3.</span> <span class="nav-text">中文乱码问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0"><span class="nav-number">2.4.</span> <span class="nav-text">图片上传</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%84%E8%AE%BA%E7%B3%BB%E7%BB%9F%E9%85%8D%E7%BD%AE"><span class="nav-number">2.5.</span> <span class="nav-text">评论系统配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%9A%E5%AE%A2%E8%83%8C%E6%99%AF%E8%AE%BE%E7%BD%AE"><span class="nav-number">2.6.</span> <span class="nav-text">博客背景设置</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E9%A1%B5%E6%90%AD%E5%BB%BA"><span class="nav-number">1.</span> <span class="nav-text">网页搭建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AA%E6%80%A7%E5%8C%96%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">个性化配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#next%E7%9A%84%E6%96%87%E6%A1%A3"><span class="nav-number">2.1.</span> <span class="nav-text">Next的文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#url%E8%AE%BE%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">url设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%E9%97%AE%E9%A2%98"><span class="nav-number">2.3.</span> <span class="nav-text">中文乱码问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0"><span class="nav-number">2.4.</span> <span class="nav-text">图片上传</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%84%E8%AE%BA%E7%B3%BB%E7%BB%9F%E9%85%8D%E7%BD%AE"><span class="nav-number">2.5.</span> <span class="nav-text">评论系统配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%9A%E5%AE%A2%E8%83%8C%E6%99%AF%E8%AE%BE%E7%BD%AE"><span class="nav-number">2.6.</span> <span class="nav-text">博客背景设置</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -162,13 +162,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -268,57 +268,59 @@
 <p>Next：8.9.0</p>
 <p>寒假在家闲来无事，便萌生了搭个人博客的想法，一方面是觉得确实有必要搭个个人主页，另一方面是感觉这样子很cooooool。但作为一个只会面对百度和google编程的天文系学生，实在是一点儿前端相关的知识都没接触过，幸好有hexo这种现成的框架，可以直接拿来用。这几天磕磕绊绊踩了不少坑后总算把这个blog搞得有模有样了，把踩到的坑记录下来，希望能对后来人有一点帮助。</p>
 <p>笔者选用的主题的是大名鼎鼎的Next，有许多功能是现成的，可以直接拿来用，如评论系统、访客统计和本地搜索。</p>
-<h2 id="网页搭建"><a href="#网页搭建" class="headerlink" title="网页搭建"></a>网页搭建</h2><p>笔者选用的方法是将Hexo生成的静态网页托管在Github仓库上，具体教程很容易搜索到，笔者使用的是以下这篇。</p>
+<h2 id="网页搭建">网页搭建</h2>
+<p>笔者选用的方法是将Hexo生成的静态网页托管在Github仓库上，具体教程很容易搜索到，笔者使用的是以下这篇。</p>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/26625249">GitHub+Hexo 搭建个人网站详细教程 - 知乎 (zhihu.com)</a></p>
 <p>注意在cmd中对网页进行操作时，要进入到对应的blog文件夹中（使用“cd blog”命令）。</p>
-<h2 id="个性化配置"><a href="#个性化配置" class="headerlink" title="个性化配置"></a>个性化配置</h2><p>接下来是笔者在对个人博客进行个性化配置中踩到的坑的记录。</p>
-<h3 id="Next的文档"><a href="#Next的文档" class="headerlink" title="Next的文档"></a>Next的文档</h3><p>如果直接搜索Next的文档，大概首先看到的会是这样网页：</p>
+<h2 id="个性化配置">个性化配置</h2>
+<p>接下来是笔者在对个人博客进行个性化配置中踩到的坑的记录。</p>
+<h3 id="next的文档">Next的文档</h3>
+<p>如果直接搜索Next的文档，大概首先看到的会是这样网页：</p>
 <p><a target="_blank" rel="noopener" href="http://theme-next.iissnan.com/">NexT 使用文档 (iissnan.com)</a></p>
 <p>那里面的步骤介绍很详细，而且还是中文，照着上面的教程一步步来完全没问题，但这个文档的最新更新日期是2017年12月。最新的文档应该是下面这个：</p>
 <p><a target="_blank" rel="noopener" href="https://theme-next.js.org/docs/">Documentation | NexT (theme-next.js.org)</a></p>
 <p>在网页内搜索即可得到相应的教程。</p>
 <p>这也说明，因为Next的版本迭代比较快，很多网上与此相关的教程已经与当前Next版本不适配。在查询教程时注意自己所使用的Next与Hexo版本号和作者列出的版本号的差别。如果差别较大，建议先去document中查询Next是否已支持相关功能。</p>
-<h3 id="url设置"><a href="#url设置" class="headerlink" title="url设置"></a>url设置</h3><p>在博客配置文件中找到已下这几行：</p>
+<h3 id="url设置">url设置</h3>
+<p>在博客配置文件中找到已下这几行：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># URL</span></span><br><span class="line"><span class="comment">## Set your site url here. For example, if you use GitHub Page, set url as &#x27;https://username.github.io/project&#x27;</span></span><br><span class="line"><span class="attr">url:</span> <span class="string">https://example.com</span></span><br></pre></td></tr></table></figure>
-
 <p>将url这一项修改为博客对应的地址。</p>
 <p>笔者就是因为忘了这一个设置，在后续配置中遇到了一堆奇奇怪怪的问题……</p>
-<h3 id="中文乱码问题"><a href="#中文乱码问题" class="headerlink" title="中文乱码问题"></a>中文乱码问题</h3><p>在配置博客相关信息时，如果输入中文：</p>
+<h3 id="中文乱码问题">中文乱码问题</h3>
+<p>在配置博客相关信息时，如果输入中文：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Site</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">中文博客标题</span></span><br><span class="line"><span class="attr">subtitle:</span> <span class="string">&#x27;这是中文&#x27;</span></span><br><span class="line"><span class="attr">description:</span> <span class="string">&#x27;这也是中文&#x27;</span></span><br><span class="line"><span class="string">keywords:中文关键词</span></span><br><span class="line"><span class="attr">author:</span> <span class="string">中文名</span></span><br><span class="line"><span class="attr">language:</span> <span class="string">zh-Hans</span></span><br><span class="line"><span class="attr">timezone:</span> <span class="string">&#x27;Asia/Shanghai&#x27;</span></span><br></pre></td></tr></table></figure>
-
 <p>会发现在网页中变成了乱码。这应该就是博客配置文件的编码问题，将编码改为UTF-8就可以解决了。</p>
-<h3 id="图片上传"><a href="#图片上传" class="headerlink" title="图片上传"></a>图片上传</h3><p>笔者选用的图片上传方法是云图床，即将图片上传到对应云盘，通过在文章中插入图片对应url的方法插入图片，以节省博客的加载时间。</p>
+<h3 id="图片上传">图片上传</h3>
+<p>笔者选用的图片上传方法是云图床，即将图片上传到对应云盘，通过在文章中插入图片对应url的方法插入图片，以节省博客的加载时间。</p>
 <p>笔者首先选用了七牛云，但它使用的协议是http，在使用https协议的博客中会被拦截，后面改用<a target="_blank" rel="noopener" href="https://sm.ms/">Image Upload - SM.MS - Simple Free Image Hosting</a>解决了图片上传问题。</p>
-<h3 id="评论系统配置"><a href="#评论系统配置" class="headerlink" title="评论系统配置"></a>评论系统配置</h3><p>笔者选用的评论系统是Utterances，该系统配置简单，要求用户使用Github账户登录后才可进行评论，相比Gitalk可自动进行初始化，且要求的权限较少。</p>
+<h3 id="评论系统配置">评论系统配置</h3>
+<p>笔者选用的评论系统是Utterances，该系统配置简单，要求用户使用Github账户登录后才可进行评论，相比Gitalk可自动进行初始化，且要求的权限较少。</p>
 <p>配置步骤如下：</p>
-<ol>
+<ol type="1">
 <li>进入<a target="_blank" rel="noopener" href="https://github.com/apps/utterances">GitHub Apps - utterances</a>中给予utterances相应仓库的授权，即使用该仓库的issue作为博客的评论系统。如笔者直接设置的是博客对应仓库。</li>
 <li>在blog文件夹下安装相应插件：</li>
 </ol>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">npm</span> <span class="string">install</span> <span class="string">--save</span> <span class="string">github:theme-next/hexo-next-utteranc</span></span><br></pre></td></tr></table></figure>
-
-<ol start="3">
+<ol start="3" type="1">
 <li><p>进入主题配置文件中，next已预先配置好了utterances，只需找到以下部分修改相应选项即可：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">comments:</span></span><br><span class="line">  <span class="comment"># Available values: tabs | buttons</span></span><br><span class="line">  <span class="attr">style:</span> <span class="string">tabs</span></span><br><span class="line">  <span class="comment"># Choose a comment system to be displayed by default.</span></span><br><span class="line">  <span class="comment"># Available values: disqus | disqusjs | changyan | livere | gitalk | utterances</span></span><br><span class="line">  <span class="attr">active:</span> <span class="string">&#x27;utterances&#x27;</span></span><br><span class="line">  </span><br><span class="line">  <span class="string">....</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment"># Utterances</span></span><br><span class="line"><span class="comment"># For more information: https://utteranc.es</span></span><br><span class="line"><span class="attr">utterances:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">DenekoW/DenekoW.github.io</span></span><br><span class="line">  <span class="comment">#这里按照该格式填你已授权的仓库路径。</span></span><br><span class="line">  <span class="comment"># Available values: pathname | url | title | og:title</span></span><br><span class="line">  <span class="attr">issue_term:</span> <span class="string">pathname</span></span><br><span class="line">  <span class="comment"># Available values: github-light | github-dark | preferred-color-scheme | github-dark-orange | icy-dark | dark-blue | photon-dark | boxy-light 这些都是评论系统的不同主题，笔者还没尝试过。</span></span><br><span class="line">  <span class="attr">theme:</span> <span class="string">github-light</span></span><br><span class="line">  <span class="attr">cdn:</span> <span class="string">https://utteranc.es/client.js</span></span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
 </ol>
-<h3 id="博客背景设置"><a href="#博客背景设置" class="headerlink" title="博客背景设置"></a>博客背景设置</h3><p>单是Next的简约黑白背景可能会有些单调，笔者便尝试更换背景。</p>
+<h3 id="博客背景设置">博客背景设置</h3>
+<p>单是Next的简约黑白背景可能会有些单调，笔者便尝试更换背景。</p>
 <p>更换背景的原理是修改网站对应的css文件，所以只要在对应css文件中写入自定义css样式就行。</p>
-<ol>
+<ol type="1">
 <li><p>打开博客网页，按F12/右键选择“检查”得到当前网页“body”项对应的css设置，如笔者查询到的是：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">body</span> &#123;</span><br><span class="line">    <span class="attr">color:</span> <span class="string">var(--text-color);</span></span><br><span class="line">    <span class="attr">font-family:</span> <span class="string">Lato</span>, <span class="string">&#x27;PingFang SC&#x27;</span>, <span class="string">&#x27;Microsoft YaHei&#x27;</span>, <span class="string">sans-serif;</span></span><br><span class="line">    <span class="attr">font-size:</span> <span class="string">1em;</span></span><br><span class="line">    <span class="attr">line-height:</span> <span class="number">2</span><span class="string">;</span></span><br><span class="line">    <span class="attr">min-height:</span> <span class="number">100</span><span class="string">%;</span></span><br><span class="line">    <span class="attr">position:</span> <span class="string">relative;</span></span><br><span class="line">    <span class="attr">transition:</span> <span class="string">padding</span> <span class="number">0.</span><span class="string">2s</span> <span class="string">ease-in-out;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li><p>在blog文件中找到’blog/theme/source/css/main.styl’文件，在其末尾直接添加上述代码，并加入关于背景设置的相关css代码：</p>
-</li>
+<li><p>在blog文件中找到’blog/theme/source/css/main.styl’文件，在其末尾直接添加上述代码，并加入关于背景设置的相关css代码：</p></li>
 </ol>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">body&#123;</span></span><br><span class="line">    <span class="attr">color:</span> <span class="string">var(--text-color);</span></span><br><span class="line">    <span class="attr">font-family:</span> <span class="string">Lato,</span> <span class="string">&#x27;PingFang SC&#x27;</span><span class="string">,</span> <span class="string">&#x27;Microsoft YaHei&#x27;</span><span class="string">,</span> <span class="string">sans-serif;</span></span><br><span class="line">    <span class="attr">font-size:</span> <span class="string">1em;</span></span><br><span class="line">    <span class="attr">line-height:</span> <span class="number">2</span><span class="string">;</span></span><br><span class="line">    <span class="attr">min-height:</span> <span class="number">100</span><span class="string">%;</span></span><br><span class="line">    <span class="attr">position:</span> <span class="string">relative;</span></span><br><span class="line">    <span class="attr">transition:</span> <span class="string">padding</span> <span class="number">0.</span><span class="string">2s</span> <span class="string">ease-in-out;</span></span><br><span class="line">    <span class="string">background:url(/images/background.jpg);#此处为背景图片的路径</span></span><br><span class="line">    <span class="attr">background-repeat:</span> <span class="literal">no</span><span class="string">-repeat;</span></span><br><span class="line">    <span class="string">background-attachment:fixed;</span></span><br><span class="line">    <span class="string">background-position:50%</span> <span class="number">50</span><span class="string">%;</span></span><br><span class="line">    <span class="attr">background-size:</span> <span class="number">100</span><span class="string">%</span> <span class="number">100</span><span class="string">%;</span></span><br><span class="line">    <span class="attr">background-size:</span> <span class="string">cover;</span></span><br><span class="line">    <span class="string">-webkit-background-size:</span> <span class="string">cover;</span></span><br><span class="line">    <span class="string">-o-background-size:</span> <span class="string">cover;</span></span><br><span class="line">    <span class="string">-moz-background-size:</span> <span class="string">cover;</span></span><br><span class="line">    <span class="string">-ms-background-size:</span> <span class="string">cover;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<ol start="3">
+<ol start="3" type="1">
 <li>考虑到当前在网页上呈现的效果为博客文章将背景直接截断，我们可以适当调整透明度，使读者可以透过文章看到背景，使背景的设置更加自然。只要在上述代码后面直接添加下面这几行即可：</li>
 </ol>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 修改主体透明度</span><br><span class="line">.post-block &#123;</span><br><span class="line">	background: rgba(255,255,255,0.7) none repeat scroll !important;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>笔者查询到的很多教程是直接新创建一个style.styl文件，在主题配置文件中将#style: source/_data/styles.styl 取消注释。该做法的问题是这个styles文件里不包括原来网站的css设置，而在main这个css文件中把style文件import进去后，styles里的设置会取代原来的设置，导致出来的结果里没有原来的css配置。</p>
 <p>参考教程：</p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_46106283/article/details/109880961"> Next主题添加背景图片_爱睡懒觉的程序员的博客-CSDN博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_46106283/article/details/109880961">Next主题添加背景图片_爱睡懒觉的程序员的博客-CSDN博客</a></p>
 <p>本文只记录了笔者在进行配置过程中参考搜索得到的教程遇到的问题，更多的个性化设置可参考网络上其他教程。</p>
 
     </div>
@@ -341,6 +343,9 @@
                 </a>
             </div>
             <div class="post-nav-item">
+                <a href="/2022/02/08/%E5%9F%BA%E4%BA%8EPhotutils%E7%9A%84%E6%81%92%E6%98%9F%E6%B5%8B%E5%85%89/" rel="next" title="基于Photutils的恒星测光">
+                  基于Photutils的恒星测光 <i class="fa fa-chevron-right"></i>
+                </a>
             </div>
           </div>
     </footer>
@@ -408,6 +413,12 @@
   <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
 
 
 <script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"DenekoW/DenekoW.github.io","issue_term":"pathname","theme":"github-light","cdn":"https://utteranc.es/client.js"}</script>
