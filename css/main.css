@@ -1626,7 +1626,6 @@ pre code {
   line-height: 1.8;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 .post-toc .nav .nav-child {
   display: none;
@@ -2934,7 +2933,7 @@ hr {
   vertical-align: middle;
 }
 .links-of-author a::before {
-  background: #f029eb;
+  background: #e26e65;
   display: inline-block;
   margin-right: 3px;
   transform: translateY(-2px);
@@ -2983,5 +2982,5 @@ body .post-body p {
   text-indent: 2em;
 }
 .post-block {
-  background: rgba(255,255,255,0.7) none repeat scroll !important;
+  background: rgba(255,255,255,0.9) none repeat scroll !important;
 }
