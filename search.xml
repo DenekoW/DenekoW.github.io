@@ -1,6 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Astropy使用笔记（一）——常数与单位换算</title>
+    <url>/2022/02384bc663.html</url>
+    <content><![CDATA[<p>Astropy版本：5.0.1</p>
+<p>Astropy作为天文方面最有名的Python库，包含了各种在天体物理研究中需要用到的工具。其功能繁多而全面，以致于我每次发现Astropy的新用法时总想感叹：“Astropy是万能的！”。借此系列笔记，我想整理一下使用Astropy过程中实现的各种功能，不求全面，但求实用。</p>
+<p>推荐资料：</p>
+<p>Astropy官方文档：<a href="https://docs.astropy.org/en/stable/">Astropy Documentation — Astropy v5.0.1</a></p>
+<p>China-VO对Astropy及Astropy Project的简单介绍：<a href="https://hebl.china-vo.org/w/19381747">AstroPy 简介 :: 宇宙無窮 盈虛有數 (china-vo.org)</a></p>
+<p>包括Astropy在内十几个天文Pyhton包的中文介绍：<a href="https://www.cnblogs.com/zhaoqtzt/p/9011636.html">天文python应用包中文使用说明文档 《Usage Documentation of Astro-python》 - zhaoqtzt - 博客园 (cnblogs.com)</a>（写得很全，推荐阅读！）</p>
+<p>本文着重介绍利用Astropy获得常数及单位换算。</p>
+<p><kbd>astropy.constant</kbd>部分的官方文档：<a href="https://docs.astropy.org/en/stable/constants/index.html">Constants (astropy.constants) — Astropy v5.0.1</a></p>
+<p>在进行计算时，利用<kbd>astropy.constant</kbd>我们可以直接调用所需的常数：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;<span class="keyword">from</span> astropy <span class="keyword">import</span> constants <span class="keyword">as</span> const</span><br><span class="line">&gt;&gt;&gt;<span class="built_in">print</span>(const.c)</span><br><span class="line">  Name   = Speed of light <span class="keyword">in</span> vacuum</span><br><span class="line">  Value  = <span class="number">299792458.0</span></span><br><span class="line">  Uncertainty  = <span class="number">0.0</span></span><br><span class="line">  Unit  = m / s</span><br><span class="line">  Reference = CODATA <span class="number">2018</span></span><br></pre></td></tr></table></figure>
+<p>一般在天文计算中用到的是cgs单位制：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;<span class="built_in">print</span>(const.c.cgs)</span><br><span class="line"><span class="number">29979245800.0</span> cm / s</span><br></pre></td></tr></table></figure>
+<p>也可直接调用其数值或者单位：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;<span class="built_in">print</span>(const.c.cgs.value)</span><br><span class="line"><span class="number">29979245800.0</span></span><br><span class="line">&gt;&gt;&gt;<span class="built_in">print</span>(const.c.cgs.unit)</span><br><span class="line">cm / s</span><br></pre></td></tr></table></figure>
+<p>对于已知带量纲的变量，可直接转换为cgs单位制，但需要实现调用<kbd>astropy.units</kbd>注明量纲。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;<span class="keyword">from</span> astropy <span class="keyword">import</span> units <span class="keyword">as</span> u</span><br><span class="line">&gt;&gt;&gt;m = <span class="number">2</span> * <span class="number">1e30</span> * u.kg</span><br><span class="line">&gt;&gt;&gt;<span class="built_in">print</span>(m.cgs)</span><br><span class="line"><span class="number">2.0000000000000002e+33</span> g</span><br></pre></td></tr></table></figure>
+<p>甚至可以取数值和换单位一起干了：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;m = <span class="number">2</span> * <span class="number">1e30</span> * u.kg</span><br><span class="line">&gt;&gt;&gt;<span class="built_in">print</span>(m.to_value(u.g))</span><br><span class="line"><span class="number">2.0000000000000002e+33</span></span><br></pre></td></tr></table></figure>
+<p>注意在计算时有量纲量与无量纲量不可直接进行加减，可进行乘除，否则会报错。</p>
+<p>为了计算方便，还可以利用<kbd>astropy.units</kbd>自定义单位：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;kpc = <span class="number">1000</span> * u.pc</span><br><span class="line">&gt;&gt;&gt;d = <span class="number">100</span> * kpc</span><br></pre></td></tr></table></figure>
+<p>有时计算结果的单位需要化简：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;M_J=((<span class="number">5</span>*k_B*T)/(G*m_p))**(<span class="number">3</span>/<span class="number">2</span>) * (<span class="number">3</span>/(<span class="number">4</span>*math.pi*rho))**(<span class="number">1</span>/<span class="number">2</span>)</span><br><span class="line">&gt;&gt;<span class="built_in">print</span>(M_J)</span><br><span class="line">&gt;&gt;<span class="built_in">print</span>(M_J.decompose())</span><br><span class="line"><span class="number">2.5645343480047463e+39</span> erg(<span class="number">3</span>/<span class="number">2</span>) s3 / (cm3 g(<span class="number">1</span>/<span class="number">2</span>))</span><br><span class="line"><span class="number">2.5645343480047469e+36</span> kg</span><br></pre></td></tr></table></figure>
+<p>整体使用示例：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">from</span> astropy <span class="keyword">import</span> constants <span class="keyword">as</span> const</span><br><span class="line"><span class="keyword">from</span> astropy <span class="keyword">import</span> units <span class="keyword">as</span> u</span><br><span class="line">k_B = const.k_B.cgs</span><br><span class="line">m_p = const.m_p.cgs</span><br><span class="line">G = const.G.cgs</span><br><span class="line">T = <span class="number">3500</span> * u.Kelvin</span><br><span class="line">rho = <span class="number">3.68</span> * <span class="number">1e-22</span> * u.g / u.cm**<span class="number">3</span></span><br><span class="line"></span><br><span class="line">M_J=((<span class="number">5</span>*k_B*T)/(G*m_p))**(<span class="number">3</span>/<span class="number">2</span>) * (<span class="number">3</span>/(<span class="number">4</span>*math.pi*rho))**(<span class="number">1</span>/<span class="number">2</span>)</span><br><span class="line"><span class="built_in">print</span>(M_J.decompose())<span class="comment">#单位化简</span></span><br><span class="line"><span class="built_in">print</span>(M_J.decompose().to_value(u.g))</span><br></pre></td></tr></table></figure>
+]]></content>
+      <tags>
+        <tag>Astropy</tag>
+        <tag>天文</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo+Next搭建个人博客的踩坑之路（持续更新）</title>
     <url>/2022/02adb944b.html</url>
     <content><![CDATA[<p>版本号：</p>
