@@ -2,6 +2,17 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://denekow.github.io/2022/02431ec03e.html</loc>
+    
+    <lastmod>2022-02-15T11:34:46.573Z</lastmod>
+    
+    <date>1644825377000</date>
+    <title>Astropy使用笔记（二）——天球坐标系 | Deneko's Sol III Archive</title>
+    
+    <desc>利用Astropy实现关于天球坐标系的常见操作。</desc>
+  </url>
+  
+  <url>
     <loc>https://denekow.github.io/2022/02384bc663.html</loc>
     
     <lastmod>2022-02-12T16:09:49.337Z</lastmod>

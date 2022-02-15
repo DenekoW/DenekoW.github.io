@@ -35,6 +35,45 @@
       </tags>
   </entry>
   <entry>
+    <title>Astropy使用笔记（二）——天球坐标系</title>
+    <url>/2022/02431ec03e.html</url>
+    <content><![CDATA[<p>Astropy版本：5.0.1</p>
+<p><kbd>astropy.coordinates</kbd>的文档：<a href="https://docs.astropy.org/en/stable/coordinates/index.html">Astronomical Coordinate Systems (astropy.coordinates) — Astropy v5.0.1</a></p>
+<p><kbd>astropy.wcs</kbd>的文档：<a href="https://docs.astropy.org/en/stable/wcs/index.html">World Coordinate System (astropy.wcs) — Astropy v5.0.1</a></p>
+<h2 id="创建坐标系对象">创建坐标系对象</h2>
+<ul>
+<li>不同创建方式</li>
+</ul>
+<p>默认坐标系框架为国际天球参考系（International Celestial Reference System, ICRS）。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> astropy <span class="keyword">import</span> units <span class="keyword">as</span> u</span><br><span class="line"><span class="keyword">from</span> astropy.coordinates <span class="keyword">import</span> SkyCoord,ICRS</span><br><span class="line"></span><br><span class="line">c1 = SkyCoord(<span class="string">&#x27;19h51m52.11s&#x27;</span>,<span class="string">&#x27;8d55m39.1s&#x27;</span>)<span class="comment">#输入字符串</span></span><br><span class="line">c2 = SkyCoord(<span class="number">297.967</span>, <span class="number">8.92753</span>, unit=<span class="string">&quot;deg&quot;</span>)<span class="comment">#输入角度</span></span><br><span class="line">c3 = SkyCoord(<span class="number">297.967</span> * u.degree, <span class="number">8.92753</span> * u.degree)</span><br><span class="line">c4 = SkyCoord(<span class="string">&quot;19 51 52.11 +8 55 39.1&quot;</span>, unit = (u.hourangle, u.degree))</span><br><span class="line">c5 = SkyCoord(<span class="string">&quot;19:51:52.11 +8:55:39.1&quot;</span>, unit = (u.hourangle, u.degree))</span><br><span class="line"></span><br><span class="line"><span class="comment">#还可以用numpy数组输入</span></span><br><span class="line">ra = np.array([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]) * u.degree</span><br><span class="line">dec = np.array([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]) * u.degree</span><br><span class="line">c6 = SkyCoord(ra, dec, unit=u.degree)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<ul>
+<li>创建不同坐标系下坐标对象</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#J2000的赤道坐标系</span></span><br><span class="line">c1 = SkyCoord(ra = <span class="number">297.967</span>, dec = <span class="number">8.92753</span>, unit = u.degree,  frame=<span class="string">&quot;icrs&quot;</span>)</span><br><span class="line"><span class="comment">#银道坐标系</span></span><br><span class="line">c2 = SkyCoord(l = <span class="number">90</span>, b = <span class="number">0</span>, unit = u.degree,  frame=<span class="string">&quot;galactic&quot;</span>)</span><br><span class="line"><span class="comment">#地平坐标系</span></span><br><span class="line">c3 = SkyCoord(ra = <span class="number">0</span>, dec = <span class="number">0</span>, unit = u.degree, frame=<span class="string">&quot;gcrs&quot;</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>创建地球坐标对象</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> astropy.coordinates <span class="keyword">import</span> EarthLocation</span><br><span class="line">sysu = EarthLocation.from_geodetic(lat=<span class="number">22.349368</span>*u.deg, lon=<span class="number">113.584068</span>*u.deg, height=<span class="number">10</span>*u.m)</span><br></pre></td></tr></table></figure>
+<p>更多<kbd>astropy.coordinates</kbd>提供的坐标系介绍可翻阅<a href="https://docs.astropy.org/en/stable/coordinates/index.html#astropy-coordinates-overview">Astronomical Coordinate Systems (astropy.coordinates) — Astropy v5.0.1</a>的“Built-in Frame Classes”部分。</p>
+<p>定义好坐标系对象后，即可进行我们需要的操作。</p>
+<h2 id="坐标系之间的转换">坐标系之间的转换</h2>
+<p>以银道坐标转赤道坐标为例：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;gc = SkyCoord(l = <span class="number">0</span>, b = <span class="number">0</span>, unit = u.degree,  frame=<span class="string">&quot;galactic&quot;</span>)</span><br><span class="line">&gt;&gt;&gt;gc.icrs</span><br><span class="line">&lt;SkyCoord (ICRS): (ra, dec) <span class="keyword">in</span> deg</span><br><span class="line">    (<span class="number">266.40498829</span>, -<span class="number">28.93617776</span>)&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="天体角距的计算">天体角距的计算</h2>
+<p>若已知两个天体的坐标，利用<kbd>astropy.coordinates</kbd>即可方便地算出它们在天球上的角距。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;Aql_alpha = SkyCoord(<span class="string">&#x27;19h51m52.11s&#x27;</span>,<span class="string">&#x27;8d55m39.1s&#x27;</span>)</span><br><span class="line">&gt;&gt;&gt;Aql_zeta = SkyCoord(<span class="string">&#x27;19h55m19.55s&#x27;</span>,<span class="string">&#x27;8d31m10.0s&#x27;</span>)</span><br><span class="line">&gt;&gt;&gt;<span class="built_in">print</span>(Aql_alpha.separation(Aql_zeta))</span><br><span class="line">0d56m48<span class="number">.45276277</span>s</span><br></pre></td></tr></table></figure>
+<p>若在定义坐标对象时包括了距离参数，还可以计算这两个天体的空间距离：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;Aql_alpha = SkyCoord(<span class="string">&#x27;19h51m52.11s&#x27;</span>,<span class="string">&#x27;8d55m39.1s&#x27;</span>,distance = <span class="number">5.14</span> * u.pc)</span><br><span class="line">&gt;&gt;&gt;Aql_zeta = SkyCoord(<span class="string">&#x27;19h55m19.55s&#x27;</span>,<span class="string">&#x27;8d31m10.0s&#x27;</span>, distance = <span class="number">25.5</span> * u.pc)</span><br><span class="line">&gt;&gt;&gt;<span class="built_in">print</span>(Aql_alpha.separation_3d(Aql_zeta))</span><br><span class="line"><span class="number">20.36087890223041</span> pc</span><br></pre></td></tr></table></figure>
+<h2 id="不同单位制之间的换算">不同单位制之间的换算</h2>
+<p>有时笔者需要在程序中输入目标天体的以角度为单位的坐标，但查询得到的是“hms”形式的坐标，这时用<kbd>astropy.coordinates</kbd>即可方便地换算。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;c = SkyCoord(<span class="string">&#x27;19h51m52.11s&#x27;</span>,<span class="string">&#x27;8d55m39.1s&#x27;</span>)</span><br><span class="line">&gt;&gt;&gt;c.ra.degree</span><br><span class="line"><span class="number">297.967125</span></span><br><span class="line">&gt;&gt;&gt;c.ra.radian</span><br><span class="line"><span class="number">5.200507393951509</span></span><br><span class="line">&gt;&gt;&gt;c.ra.hms</span><br><span class="line">hms_tuple(h=<span class="number">19.0</span>, m=<span class="number">51.0</span>, s=<span class="number">52.11000000002116</span>)</span><br><span class="line">&gt;&gt;&gt;c.dec.dms</span><br><span class="line">dms_tuple(d=<span class="number">8.0</span>, m=<span class="number">55.0</span>, s=<span class="number">39.099999999999824</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#输出字符串形式</span></span><br><span class="line">&gt;&gt;&gt;c.to_string()</span><br><span class="line"><span class="string">&#x27;297.967 8.92753&#x27;</span></span><br><span class="line">&gt;&gt;&gt;c.to_string(<span class="string">&#x27;hmsdms&#x27;</span>)</span><br><span class="line"><span class="string">&#x27;19h51m52.11s +08d55m39.1s&#x27;</span></span><br><span class="line">&gt;&gt;&gt;c.to_string(<span class="string">&#x27;dms&#x27;</span>)</span><br><span class="line"><span class="string">&#x27;297d58m01.65s 8d55m39.1s&#x27;</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <tags>
+        <tag>Astropy</tag>
+        <tag>天文</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo+Next搭建个人博客的踩坑之路（持续更新）</title>
     <url>/2022/02adb944b.html</url>
     <content><![CDATA[<p>版本号：</p>
