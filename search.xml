@@ -35,40 +35,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Astropy使用笔记（三）：数据拟合</title>
-    <url>/2022/0214e2f00d.html</url>
-    <content><![CDATA[<p>Astropy版本：5.0.1</p>
-<p><kbd>astropy.modeling</kbd>的文档：<a href="https://docs.astropy.org/en/stable/modeling/index.html">Models and Fitting (astropy.modeling) — Astropy v5.0.1</a></p>
-<p><kbd>astropy</kbd>提供了<kbd>astropy.modeling</kbd>模块用于对数据进行特定模型下的拟合，笔者结合自身的使用经验，在本文中以二维高斯模型与moffat模型拟合为例子介绍该模块的各项功能。 此外, <kbd>astropy.modeling</kbd>还提供了线性模型、三角函数模型、反三角函数模型等常见函数模型。</p>
-<h2 id="基本功能介绍以二维高斯拟合为例">1. 基本功能介绍——以二维高斯拟合为例</h2>
-<p>已知二维高斯函数的定义为： <span class="math display">\[
-f(x, y) = A e^{-a\left(x - x_{0}\right)^{2} -b\left(x - x_{0}\right) \left(y - y_{0}\right) -c\left(y - y_{0}\right)^{2}}
-\]</span> 其中<span class="math inline">\(a,b,c\)</span>为与<span class="math inline">\(x\)</span>轴、<span class="math inline">\(y\)</span>轴方向上的方差及函数半长轴指向有关的常数。 简单的拟合程序示例如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> astropy.modeling <span class="keyword">import</span> models,fitting</span><br><span class="line"></span><br><span class="line"><span class="comment">#data为拟合数据</span></span><br><span class="line">data = data</span><br><span class="line">model_1 = models.Gaussian2D(amplitude=<span class="number">60</span>,x_mean=<span class="number">170</span>,y_mean=<span class="number">250</span>,x_stddev=<span class="number">1</span>, y_stddev=<span class="number">1</span>)</span><br><span class="line">fit_1 = fitting.LevMarLSQFitter()</span><br><span class="line">x, y=np.mgrid[:<span class="number">400</span>, :<span class="number">400</span>]</span><br><span class="line">data1 = fit_1(model_1, x, y, data)<span class="comment">#模型输出的数据</span></span><br></pre></td></tr></table></figure>
-<p><kbd>models.Gaussian2D()</kbd>内的各项参数为模型的初始值，对应含义如下： <kbd>amplitude</kbd>：高斯模型的初始峰值，即函数中的<span class="math inline">\(A\)</span>。 <kbd>x_mean</kbd>与<kbd>y_mean</kbd>：高斯模型中心点的初始位置，即函数中的<span class="math inline">\(x_0\)</span>与<span class="math inline">\(y_0\)</span>。 <kbd>x_stddev</kbd>与<kbd>y_stddev</kbd>：高斯模型的初始方差，即函数中的<span class="math inline">\(\sigma_x\)</span>与<span class="math inline">\(\sigma_y\)</span>。</p>
-<p><kbd>fitting.LevMarLSQFitter()</kbd>为选用的拟合器（Fitter），注意不同的模型需要使用对应的拟合器。</p>
-<p><strong>限制参数</strong></p>
-<p>考虑到该模型有六个自由参数，在拟合上有一定难度，可通过限制参数减少自由度：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#使x_stddev与y_stddev保持初始值不变。</span></span><br><span class="line">gaussian = models.Gaussian2D(amplitude= <span class="number">80</span> , x_mean= <span class="number">8.5</span>, y_mean=<span class="number">9</span>, x_stddev=<span class="number">1</span>, y_stddev=<span class="number">1</span>，fixed=&#123;<span class="string">&#x27;x_stddev&#x27;</span>: <span class="literal">True</span>,<span class="string">&#x27;y_stddev&#x27;</span>:<span class="literal">True</span>&#125;)</span><br></pre></td></tr></table></figure>
-<p>或者限制参数的变化范围：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tie_stddev</span>(<span class="params">model</span>):</span></span><br><span class="line">	<span class="keyword">return</span> model.y_stddev_0</span><br><span class="line"><span class="comment">#使x_stddev与y_stddev的变化范围限制在0.1到1.5之间</span></span><br><span class="line">gaussian = models.Gaussian2D(amplitude= <span class="number">180</span> , x_mean= <span class="number">8.5</span>, y_mean=<span class="number">9</span>, x_stddev=<span class="number">1.3</span>, y_stddev=<span class="number">1.3</span>,bounds=&#123;<span class="string">&#x27;x_stddev&#x27;</span>: (<span class="number">0.1</span>,<span class="number">1.5</span>),<span class="string">&#x27;y_stddev&#x27;</span>:(<span class="number">0.1</span>,<span class="number">1.5</span>)&#125;)</span><br><span class="line">gaussian.x_stddev.tied = tie_stddev</span><br></pre></td></tr></table></figure>
-<p><strong>多个模型叠加</strong></p>
-<p>在实际处理过程中，有时需要多个模型叠加对数据进行拟合。如用二维高斯模型拟合一个天体源时，考虑到背景的影响，应在此基础上再加一个常数模型拟合。<kbd>astropy</kbd>中模型叠加的操作很简单：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">c = models.Const2D(amplitude=<span class="number">10</span>)</span><br><span class="line">gaussian = models.Gaussian2D(amplitude= <span class="number">180</span> , x_mean= <span class="number">8.5</span>, y_mean=<span class="number">9</span>, x_stddev=<span class="number">1.3</span>, y_stddev=<span class="number">1.3</span>,)</span><br><span class="line">model = gaussian + c</span><br></pre></td></tr></table></figure>
-<p><strong>获得拟合后的模型参数</strong></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#获取高斯函数参数</span></span><br><span class="line">&gt;&gt;&gt;model_1.amplitude</span><br><span class="line">Parameter(<span class="string">&#x27;amplitude&#x27;</span>, value=<span class="number">200.0</span>)</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt;model_1.x_mean</span><br><span class="line">Parameter(<span class="string">&#x27;x_mean&#x27;</span>, value=<span class="number">8.5</span>)</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt;model_1.x_mean.value</span><br><span class="line"><span class="number">8.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#获取高斯函数的fwhm</span></span><br><span class="line">&gt;&gt;&gt;model_1.x_fwhm</span><br><span class="line"><span class="number">2.3548200450309493</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="psf拟合moffat函数拟合">2. PSF拟合——Moffat函数拟合</h2>
-<p>在进行测光时，我们需要对星点进行拟合以获得其半高全宽，一般可采用二维高斯函数、二维moffat函数或一维moffat函数进行拟合。 若使用二维moffat函数，代码示例如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#x_cen与y_cen为星点在数据中的对应位置</span></span><br><span class="line"><span class="comment">#peak为星点在数据中的流量最大值</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#选定拟合的范围</span></span><br><span class="line"> analysis_radius = <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#计算出该圆形对应的各坐标点</span></span><br><span class="line"> xmin = x_cen - analysis_radius</span><br><span class="line"> xmax = x_cen + analysis_radius</span><br><span class="line"> ymin = y_cen - analysis_radius</span><br><span class="line"> ymax = y_cen + analysis_radius</span><br><span class="line"></span><br><span class="line"> x, y=np.mgrid[:<span class="number">20</span>, :<span class="number">20</span>]</span><br><span class="line"></span><br><span class="line">model = models.Moffat2D(amplitude=<span class="number">1.0</span>,x_0=<span class="number">0</span>,y_0=<span class="number">0</span>,gamma=<span class="number">2</span>,alpha=<span class="number">3.5</span>)</span><br><span class="line">fitter = fitting.SimplexLSQFitter()</span><br><span class="line">fitted_model = fitter(model, x,y,data[ymin:ymax,xmin:xmax] / peak)</span><br></pre></td></tr></table></figure>
-<p>考虑到有时星点的成像质量不佳，此时采用一维moffat函数拟合可取得更好的效果，其具体思路也是以目标星点为中心，划定一定大小的圆，按像素点与圆心的距离，将二维数据重新组合为以距离为变量的一维函数：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#x_cen与y_cen为星点在数据中的对应位置</span></span><br><span class="line"><span class="comment">#peak为星点在数据中的流量最大值</span></span><br><span class="line"></span><br><span class="line">flux_counts = []</span><br><span class="line">pixel_distance = []</span><br><span class="line"></span><br><span class="line"><span class="comment">#选定拟合的范围</span></span><br><span class="line">analysis_radius = <span class="number">10</span></span><br><span class="line"></span><br><span class="line">xmin = x_cen - analysis_radius</span><br><span class="line">xmax = x_cen + analysis_radius</span><br><span class="line">ymin = y_cen - analysis_radius</span><br><span class="line">ymax = y_cen + analysis_radius</span><br><span class="line"></span><br><span class="line">x, y=np.mgrid[:<span class="number">20</span>, :<span class="number">20</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(x_cen - analysis_radius, x_cen + analysis_radius):</span><br><span class="line">	<span class="keyword">for</span> y <span class="keyword">in</span> <span class="built_in">range</span>(y_cen - analysis_radius, y_cen + analysis_radius):</span><br><span class="line">		flux_counts.append(((data[y][x]) / peak))</span><br><span class="line">		pixel_distance.append(np.linalg.norm((x_cen - x, y_cen - y)))</span><br><span class="line"></span><br><span class="line">model = models.Moffat1D(amplitude=<span class="number">1.0</span>, x_0=<span class="number">0</span>, gamma=<span class="number">2.</span>, alpha=<span class="number">3.5</span>)</span><br><span class="line">fitter = fitting.SimplexLSQFitter()</span><br><span class="line">fitted_model = fitter(model, pixel_distance, flux_counts)</span><br></pre></td></tr></table></figure>
-]]></content>
-      <tags>
-        <tag>Astropy</tag>
-        <tag>天文</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Astropy使用笔记（二）——天球坐标系</title>
     <url>/2022/02431ec03e.html</url>
     <content><![CDATA[<p>Astropy版本：5.0.1</p>
@@ -101,6 +67,40 @@ f(x, y) = A e^{-a\left(x - x_{0}\right)^{2} -b\left(x - x_{0}\right) \left(y - y
 <h2 id="不同单位制之间的换算">不同单位制之间的换算</h2>
 <p>有时笔者需要在程序中输入目标天体的以角度为单位的坐标，但查询得到的是“hms”形式的坐标，这时用<kbd>astropy.coordinates</kbd>即可方便地换算。</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;c = SkyCoord(<span class="string">&#x27;19h51m52.11s&#x27;</span>,<span class="string">&#x27;8d55m39.1s&#x27;</span>)</span><br><span class="line">&gt;&gt;&gt;c.ra.degree</span><br><span class="line"><span class="number">297.967125</span></span><br><span class="line">&gt;&gt;&gt;c.ra.radian</span><br><span class="line"><span class="number">5.200507393951509</span></span><br><span class="line">&gt;&gt;&gt;c.ra.hms</span><br><span class="line">hms_tuple(h=<span class="number">19.0</span>, m=<span class="number">51.0</span>, s=<span class="number">52.11000000002116</span>)</span><br><span class="line">&gt;&gt;&gt;c.dec.dms</span><br><span class="line">dms_tuple(d=<span class="number">8.0</span>, m=<span class="number">55.0</span>, s=<span class="number">39.099999999999824</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#输出字符串形式</span></span><br><span class="line">&gt;&gt;&gt;c.to_string()</span><br><span class="line"><span class="string">&#x27;297.967 8.92753&#x27;</span></span><br><span class="line">&gt;&gt;&gt;c.to_string(<span class="string">&#x27;hmsdms&#x27;</span>)</span><br><span class="line"><span class="string">&#x27;19h51m52.11s +08d55m39.1s&#x27;</span></span><br><span class="line">&gt;&gt;&gt;c.to_string(<span class="string">&#x27;dms&#x27;</span>)</span><br><span class="line"><span class="string">&#x27;297d58m01.65s 8d55m39.1s&#x27;</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <tags>
+        <tag>Astropy</tag>
+        <tag>天文</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Astropy使用笔记（三）：数据拟合</title>
+    <url>/2022/0214e2f00d.html</url>
+    <content><![CDATA[<p>Astropy版本：5.0.1</p>
+<p><kbd>astropy.modeling</kbd>的文档：<a href="https://docs.astropy.org/en/stable/modeling/index.html">Models and Fitting (astropy.modeling) — Astropy v5.0.1</a></p>
+<p><kbd>astropy</kbd>提供了<kbd>astropy.modeling</kbd>模块用于对数据进行特定模型下的拟合，笔者结合自身的使用经验，在本文中以二维高斯模型与moffat模型拟合为例子介绍该模块的各项功能。 此外, <kbd>astropy.modeling</kbd>还提供了线性模型、三角函数模型、反三角函数模型等常见函数模型。</p>
+<h2 id="基本功能介绍以二维高斯拟合为例">1. 基本功能介绍——以二维高斯拟合为例</h2>
+<p>已知二维高斯函数的定义为： <span class="math display">\[
+f(x, y) = A e^{-a\left(x - x_{0}\right)^{2} -b\left(x - x_{0}\right) \left(y - y_{0}\right) -c\left(y - y_{0}\right)^{2}}
+\]</span> 其中<span class="math inline">\(a,b,c\)</span>为与<span class="math inline">\(x\)</span>轴、<span class="math inline">\(y\)</span>轴方向上的方差及函数半长轴指向有关的常数。 简单的拟合程序示例如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> astropy.modeling <span class="keyword">import</span> models,fitting</span><br><span class="line"></span><br><span class="line"><span class="comment">#data为拟合数据</span></span><br><span class="line">data = data</span><br><span class="line">model_1 = models.Gaussian2D(amplitude=<span class="number">60</span>,x_mean=<span class="number">170</span>,y_mean=<span class="number">250</span>,x_stddev=<span class="number">1</span>, y_stddev=<span class="number">1</span>)</span><br><span class="line">fit_1 = fitting.LevMarLSQFitter()</span><br><span class="line">x, y=np.mgrid[:<span class="number">400</span>, :<span class="number">400</span>]</span><br><span class="line">data1 = fit_1(model_1, x, y, data)<span class="comment">#模型输出的数据</span></span><br></pre></td></tr></table></figure>
+<p><kbd>models.Gaussian2D()</kbd>内的各项参数为模型的初始值，对应含义如下： <kbd>amplitude</kbd>：高斯模型的初始峰值，即函数中的<span class="math inline">\(A\)</span>。 <kbd>x_mean</kbd>与<kbd>y_mean</kbd>：高斯模型中心点的初始位置，即函数中的<span class="math inline">\(x_0\)</span>与<span class="math inline">\(y_0\)</span>。 <kbd>x_stddev</kbd>与<kbd>y_stddev</kbd>：高斯模型的初始方差，即函数中的<span class="math inline">\(\sigma_x\)</span>与<span class="math inline">\(\sigma_y\)</span>。</p>
+<p><kbd>fitting.LevMarLSQFitter()</kbd>为选用的拟合器（Fitter），注意不同的模型需要使用对应的拟合器。</p>
+<p><strong>限制参数</strong></p>
+<p>考虑到该模型有六个自由参数，在拟合上有一定难度，可通过限制参数减少自由度：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#使x_stddev与y_stddev保持初始值不变。</span></span><br><span class="line">gaussian = models.Gaussian2D(amplitude= <span class="number">80</span> , x_mean= <span class="number">8.5</span>, y_mean=<span class="number">9</span>, x_stddev=<span class="number">1</span>, y_stddev=<span class="number">1</span>，fixed=&#123;<span class="string">&#x27;x_stddev&#x27;</span>: <span class="literal">True</span>,<span class="string">&#x27;y_stddev&#x27;</span>:<span class="literal">True</span>&#125;)</span><br></pre></td></tr></table></figure>
+<p>或者限制参数的变化范围：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tie_stddev</span>(<span class="params">model</span>):</span></span><br><span class="line">	<span class="keyword">return</span> model.y_stddev_0</span><br><span class="line"><span class="comment">#使x_stddev与y_stddev的变化范围限制在0.1到1.5之间</span></span><br><span class="line">gaussian = models.Gaussian2D(amplitude= <span class="number">180</span> , x_mean= <span class="number">8.5</span>, y_mean=<span class="number">9</span>, x_stddev=<span class="number">1.3</span>, y_stddev=<span class="number">1.3</span>,bounds=&#123;<span class="string">&#x27;x_stddev&#x27;</span>: (<span class="number">0.1</span>,<span class="number">1.5</span>),<span class="string">&#x27;y_stddev&#x27;</span>:(<span class="number">0.1</span>,<span class="number">1.5</span>)&#125;)</span><br><span class="line">gaussian.x_stddev.tied = tie_stddev</span><br></pre></td></tr></table></figure>
+<p><strong>多个模型叠加</strong></p>
+<p>在实际处理过程中，有时需要多个模型叠加对数据进行拟合。如用二维高斯模型拟合一个天体源时，考虑到背景的影响，应在此基础上再加一个常数模型拟合。<kbd>astropy</kbd>中模型叠加的操作很简单：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">c = models.Const2D(amplitude=<span class="number">10</span>)</span><br><span class="line">gaussian = models.Gaussian2D(amplitude= <span class="number">180</span> , x_mean= <span class="number">8.5</span>, y_mean=<span class="number">9</span>, x_stddev=<span class="number">1.3</span>, y_stddev=<span class="number">1.3</span>,)</span><br><span class="line">model = gaussian + c</span><br></pre></td></tr></table></figure>
+<p><strong>获得拟合后的模型参数</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#获取高斯函数参数</span></span><br><span class="line">&gt;&gt;&gt;model_1.amplitude</span><br><span class="line">Parameter(<span class="string">&#x27;amplitude&#x27;</span>, value=<span class="number">200.0</span>)</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt;model_1.x_mean</span><br><span class="line">Parameter(<span class="string">&#x27;x_mean&#x27;</span>, value=<span class="number">8.5</span>)</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt;model_1.x_mean.value</span><br><span class="line"><span class="number">8.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#获取高斯函数的fwhm</span></span><br><span class="line">&gt;&gt;&gt;model_1.x_fwhm</span><br><span class="line"><span class="number">2.3548200450309493</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="psf拟合moffat函数拟合">2. PSF拟合——Moffat函数拟合</h2>
+<p>在进行测光时，我们需要对星点进行拟合以获得其半高全宽，一般可采用二维高斯函数、二维moffat函数或一维moffat函数进行拟合。 若使用二维moffat函数，代码示例如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#x_cen与y_cen为星点在数据中的对应位置</span></span><br><span class="line"><span class="comment">#peak为星点在数据中的流量最大值</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#选定拟合的范围</span></span><br><span class="line"> analysis_radius = <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#计算出该圆形对应的各坐标点</span></span><br><span class="line"> xmin = x_cen - analysis_radius</span><br><span class="line"> xmax = x_cen + analysis_radius</span><br><span class="line"> ymin = y_cen - analysis_radius</span><br><span class="line"> ymax = y_cen + analysis_radius</span><br><span class="line"></span><br><span class="line"> x, y=np.mgrid[:<span class="number">20</span>, :<span class="number">20</span>]</span><br><span class="line"></span><br><span class="line">model = models.Moffat2D(amplitude=<span class="number">1.0</span>,x_0=<span class="number">0</span>,y_0=<span class="number">0</span>,gamma=<span class="number">2</span>,alpha=<span class="number">3.5</span>)</span><br><span class="line">fitter = fitting.SimplexLSQFitter()</span><br><span class="line">fitted_model = fitter(model, x,y,data[ymin:ymax,xmin:xmax] / peak)</span><br></pre></td></tr></table></figure>
+<p>考虑到有时星点的成像质量不佳，此时采用一维moffat函数拟合可取得更好的效果，其具体思路也是以目标星点为中心，划定一定大小的圆，按像素点与圆心的距离，将二维数据重新组合为以距离为变量的一维函数：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#x_cen与y_cen为星点在数据中的对应位置</span></span><br><span class="line"><span class="comment">#peak为星点在数据中的流量最大值</span></span><br><span class="line"></span><br><span class="line">flux_counts = []</span><br><span class="line">pixel_distance = []</span><br><span class="line"></span><br><span class="line"><span class="comment">#选定拟合的范围</span></span><br><span class="line">analysis_radius = <span class="number">10</span></span><br><span class="line"></span><br><span class="line">xmin = x_cen - analysis_radius</span><br><span class="line">xmax = x_cen + analysis_radius</span><br><span class="line">ymin = y_cen - analysis_radius</span><br><span class="line">ymax = y_cen + analysis_radius</span><br><span class="line"></span><br><span class="line">x, y=np.mgrid[:<span class="number">20</span>, :<span class="number">20</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(x_cen - analysis_radius, x_cen + analysis_radius):</span><br><span class="line">	<span class="keyword">for</span> y <span class="keyword">in</span> <span class="built_in">range</span>(y_cen - analysis_radius, y_cen + analysis_radius):</span><br><span class="line">		flux_counts.append(((data[y][x]) / peak))</span><br><span class="line">		pixel_distance.append(np.linalg.norm((x_cen - x, y_cen - y)))</span><br><span class="line"></span><br><span class="line">model = models.Moffat1D(amplitude=<span class="number">1.0</span>, x_0=<span class="number">0</span>, gamma=<span class="number">2.</span>, alpha=<span class="number">3.5</span>)</span><br><span class="line">fitter = fitting.SimplexLSQFitter()</span><br><span class="line">fitted_model = fitter(model, pixel_distance, flux_counts)</span><br></pre></td></tr></table></figure>
 ]]></content>
       <tags>
         <tag>Astropy</tag>
@@ -210,6 +210,15 @@ f(x, y) = A e^{-a\left(x - x_{0}\right)^{2} -b\left(x - x_{0}\right) \left(y - y
       </tags>
   </entry>
   <entry>
+    <title>test_my_site</title>
+    <url>/2022/017525f478.html</url>
+    <content><![CDATA[<p>只是一个测试。</p>
+<figure>
+<img src="https://s2.loli.net/2022/01/28/T8HamCpu9hW6iez.jpg" alt><figcaption>包包.jpg</figcaption>
+</figure>
+]]></content>
+  </entry>
+  <entry>
     <title>Hello World</title>
     <url>/2022/014a17b156.html</url>
     <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
@@ -229,13 +238,38 @@ f(x, y) = A e^{-a\left(x - x_{0}\right)^{2} -b\left(x - x_{0}\right) \left(y - y
 ]]></content>
   </entry>
   <entry>
-    <title>test_my_site</title>
-    <url>/2022/017525f478.html</url>
-    <content><![CDATA[<p>只是一个测试。</p>
-<figure>
-<img src="https://s2.loli.net/2022/01/28/T8HamCpu9hW6iez.jpg" alt><figcaption>包包.jpg</figcaption>
-</figure>
+    <title>光谱视向速度的参考系转换</title>
+    <url>/2022/03ed5a3900.html</url>
+    <content><![CDATA[<p>我在处理银河系中性氢观测数据时，需要将原始的频率-流强光谱转化为视向速度-流强光谱。经查阅论文与数据后得知，一般银河系中性氢巡天的数据中的视向速度为相对本地静止标准(Local Standard of Rest, LSR)的速度，若要将我们观测得到的数据与巡天观测数据进行对比，需要对我们手上的光谱数据进行参考系转换处理。其流程如下：</p>
+<p>原始数据（相对地球参考系的视向速度）→相对太阳重心系（BSR)的视向速度→相对本地静止标准（LSR）的视向速度</p>
+<p>这是经与组员分析讨论后得到的流程。我对天体测量学相关知识不甚了解，若在后续学习中发现存在纰漏或错误会立刻更正。也因本次实验以体验与尝试为主，数据精度不高，我们也没有继续深究。</p>
+<p>首先对出现的各个参考系做一个简单介绍。</p>
+<h2 id="参考系介绍及转换公式">1. 参考系介绍及转换公式</h2>
+<ul>
+<li><strong>本地静止标准（LSR）</strong></li>
+</ul>
+<p>通过观测邻近恒星的自行与视向速度，很自然可推出太阳相对周围恒星具有一个本动速度。为了研究银河系中各个恒星及气体团相对银心的运动，我们需要一个排除掉太阳运动标准的参考系，即LSR。其定义为取邻近恒星的观测速度，它们相对LSR的速度之和应为0。 LSR与太阳质心系(Barycentric Standard of Rest, BSR)的换算公式为： <span class="math display">\[
+v_{LSR}=v_{BSR}+9\cos (l)\cos (b) +12\sin (l)\cos (b) + 7\sin (b)
+\]</span></p>
+<ul>
+<li><strong>太阳质心系（BSR）</strong></li>
+</ul>
+<p>该参考系的参考点为太阳系质心，因太阳系绝大部分质量来自太阳，可近似视为太阳中心。该参考系与地球参考系的换算与观测地点、观测时间及观测目标在天球上的位置有关。</p>
+<h2 id="程序实现">2. 程序实现</h2>
+<p>利用<code>astropy</code>包可以用一个函数轻松实现参考系的转换： <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> astropy.time <span class="keyword">import</span> Time</span><br><span class="line"><span class="keyword">from</span> astropy.coordinates <span class="keyword">import</span> SkyCoord, EarthLocation</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">LSR_velocity</span>(<span class="params">l,b,velocity</span>):</span></span><br><span class="line">	<span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">	输入参数为银经，银纬，原始视向速度。</span></span><br><span class="line"><span class="string">	local为观测地位置，c为利用输入坐标建立的坐标系对象。</span></span><br><span class="line"><span class="string">	barycorr为程序输出的地球坐标系与BSR间的修正，单位为m/s</span></span><br><span class="line"><span class="string">	修正后再将BSR中的速度转化为LSR中的速度。</span></span><br><span class="line"><span class="string">	&#x27;&#x27;&#x27;</span></span><br><span class="line">	local = EarthLocation.from_geodetic(lat=<span class="number">22.349368</span>*u.deg, lon=<span class="number">113.584068</span>*u.deg, height=<span class="number">10</span>*u.m)</span><br><span class="line">	c = SkyCoord(l=l*u.degree, b=b*u.degree, frame=<span class="string">&#x27;galactic&#x27;</span>)</span><br><span class="line">	c_icrs = c.transform_to(<span class="string">&#x27;icrs&#x27;</span>)</span><br><span class="line">	barycorr = c_icrs.radial_velocity_correction(obstime=Time(<span class="string">&#x27;2022-1-2&#x27;</span>), location=local) </span><br><span class="line">	velocity = velocity + barycorr.value/<span class="number">1000</span></span><br><span class="line">	<span class="built_in">print</span>(barycorr.value/<span class="number">1000</span>)</span><br><span class="line">	l = l * np.pi / <span class="number">180</span></span><br><span class="line">	b = b * np.pi / <span class="number">180</span></span><br><span class="line">	<span class="keyword">return</span> velocity + <span class="number">9</span> * np.cos(l) * np.cos(b) + <span class="number">12</span> * np.sin(l) * np.cos(b) + <span class="number">7</span> * np.sin(b)</span><br></pre></td></tr></table></figure></p>
+<p>在第一次运行时速度可能稍慢，因为<code>radial_velocity_correction</code>需从IERS上下载相应数据，若出现下列警告： <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">WARNING: failed to download http://maia.usno.navy.mil/ser7/finals2000A.<span class="built_in">all</span>, using local IERS-B: &lt;urlopen error [Errno <span class="number">11002</span>] getaddrinfo failed&gt; [astropy.utils.iers.iers]</span><br><span class="line">WARNING: Tried to get polar motions <span class="keyword">for</span> times after IERS data <span class="keyword">is</span> valid. Defaulting to polar motion <span class="keyword">from</span> the <span class="number">50</span>-yr mean <span class="keyword">for</span> those. This may affect precision at the 10s of arcsec level [astropy.coordinates.builtin_frames.utils]</span><br><span class="line">WARNING: (some) times are outside of <span class="built_in">range</span> covered by IERS table. Assuming UT1-UTC=<span class="number">0</span> <span class="keyword">for</span> coordinate transformations. [astropy.coordinates.builtin_frames.utils]</span><br><span class="line">WARNING: failed to download http://maia.usno.navy.mil/ser7/finals2000A.<span class="built_in">all</span>, using local IERS-B: &lt;urlopen error [Errno <span class="number">11001</span>] getaddrinfo failed&gt; [astropy.utils.iers.iers]</span><br></pre></td></tr></table></figure> 可重新运行程序或者科学上网解决。</p>
+<p>因为我正在上关于射电观测数据处理的课程，若有补充会立即更新（Flag）。</p>
+<p>这篇blog是总结我与组员们在处理数据中遇到的一个小问题而成（也前前后后花了快一天时间），感谢与我一同完成银河系中性氢观测实验的组员们~(&gt;▽&lt;)</p>
+<h2 id="参考资料">参考资料</h2>
+<ul>
+<li>一篇介绍射电数据处理的文章：<a href="https://www.atnf.csiro.au/people/Tobias.Westmeier/tools_hihelpers.php#restframes">Tools - Useful equations for radio astronomy (csiro.au)</a></li>
+<li><em>Fundamental Astronomy</em>第十八章中介绍LSR的部分。</li>
+<li><code>astropy</code>中相应文档部分：<a href="https://docs.astropy.org/en/stable/coordinates/velocities.html?highlight=radial_velocity_correction">Working with Velocities in Astropy Coordinates — Astropy v5.0.1</a></li>
+</ul>
 ]]></content>
+      <tags>
+        <tag>天文</tag>
+      </tags>
   </entry>
   <entry>
     <title>基于Photutils的恒星测光</title>
