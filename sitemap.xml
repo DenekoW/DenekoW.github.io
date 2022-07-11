@@ -4,21 +4,32 @@
   <url>
     <loc>https://denekow.github.io/2022/03ed5a3900.html</loc>
     
-    <lastmod>2022-03-06T09:51:07.865Z</lastmod>
+    <lastmod>2022-07-11T15:35:04.481Z</lastmod>
     
     <date>1646559970000</date>
-    <title>光谱视向速度的参考系转换 | Deneko's Sol III Archive</title>
+    <title>光谱视向速度的参考系转换 | Leyao's Blog</title>
     
     <desc>如何把原始的光谱数据中的视向速度进行参考系转换。</desc>
   </url>
   
   <url>
+    <loc>https://denekow.github.io/tags/index.html</loc>
+    
+    <lastmod>2022-07-11T14:55:10.847Z</lastmod>
+    
+    <date>1644139034000</date>
+    <title>Tag | Leyao's Blog</title>
+    
+    <desc></desc>
+  </url>
+  
+  <url>
     <loc>https://denekow.github.io/2022/02608dd537.html</loc>
     
-    <lastmod>2022-02-28T15:58:35.163Z</lastmod>
+    <lastmod>2022-03-21T13:17:57.893Z</lastmod>
     
     <date>1646057526000</date>
-    <title>Astropy使用笔记（四）：FITS文件处理 | Deneko's Sol III Archive</title>
+    <title>Astropy使用笔记（四）：FITS文件处理 | Leyao's Blog</title>
     
     <desc>使用astropy.io.fits读取天文中常见的数据格式FITS</desc>
   </url>
@@ -29,7 +40,7 @@
     <lastmod>2022-02-20T13:14:05.109Z</lastmod>
     
     <date>1645362609000</date>
-    <title>Astropy使用笔记（三）：数据拟合 | Deneko's Sol III Archive</title>
+    <title>Astropy使用笔记（三）：数据拟合 | Leyao's Blog</title>
     
     <desc>使用Astropy对数据进行拟合。</desc>
   </url>
@@ -40,7 +51,7 @@
     <lastmod>2022-02-15T11:34:46.573Z</lastmod>
     
     <date>1644825377000</date>
-    <title>Astropy使用笔记（二）——天球坐标系 | Deneko's Sol III Archive</title>
+    <title>Astropy使用笔记（二）——天球坐标系 | Leyao's Blog</title>
     
     <desc>利用Astropy实现关于天球坐标系的常见操作。</desc>
   </url>
@@ -51,7 +62,7 @@
     <lastmod>2022-02-12T16:09:49.337Z</lastmod>
     
     <date>1644656610000</date>
-    <title>Astropy使用笔记（一）——常数与单位换算 | Deneko's Sol III Archive</title>
+    <title>Astropy使用笔记（一）——常数与单位换算 | Leyao's Blog</title>
     
     <desc>用Astropy算作业题时的记录</desc>
   </url>
@@ -62,7 +73,7 @@
     <lastmod>2022-02-11T09:20:00.327Z</lastmod>
     
     <date>1644325551000</date>
-    <title>基于Photutils的恒星测光 | Deneko's Sol III Archive</title>
+    <title>基于Photutils的恒星测光 | Leyao's Blog</title>
     
     <desc>使用photutil进行恒星测光</desc>
   </url>
@@ -73,18 +84,7 @@
     <lastmod>2022-02-11T09:04:27.984Z</lastmod>
     
     <date>1644480779000</date>
-    <title>关于 | Deneko's Sol III Archive</title>
-    
-    <desc></desc>
-  </url>
-  
-  <url>
-    <loc>https://denekow.github.io/tags/index.html</loc>
-    
-    <lastmod>2022-02-11T09:03:46.343Z</lastmod>
-    
-    <date>1644139034000</date>
-    <title>标签 | Deneko's Sol III Archive</title>
+    <title>关于 | Leyao's Blog</title>
     
     <desc></desc>
   </url>
@@ -95,7 +95,7 @@
     <lastmod>2022-02-09T15:48:17.123Z</lastmod>
     
     <date>1643031127000</date>
-    <title>test_my_site | Deneko's Sol III Archive</title>
+    <title>test_my_site | Leyao's Blog</title>
     
     <desc>A description</desc>
   </url>
@@ -106,7 +106,7 @@
     <lastmod>2022-02-09T15:48:17.121Z</lastmod>
     
     <date>1643031073871</date>
-    <title>Hello World | Deneko's Sol III Archive</title>
+    <title>Hello World | Leyao's Blog</title>
     
     <desc>Hello World!</desc>
   </url>
@@ -117,7 +117,7 @@
     <lastmod>2022-02-09T15:48:17.116Z</lastmod>
     
     <date>1644309169000</date>
-    <title>Hexo+Next搭建个人博客的踩坑之路（持续更新） | Deneko's Sol III Archive</title>
+    <title>Hexo+Next搭建个人博客的踩坑之路（持续更新） | Leyao's Blog</title>
     
     <desc>记录配置博客时遇到的问题</desc>
   </url>
