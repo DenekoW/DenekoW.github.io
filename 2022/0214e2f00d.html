@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Leyao Wei">
+
+
+    <meta name="subtitle" content="一些地球漫游纪事罢了。">
+
+
+    <meta name="description" content="天文系本科在读，日常是打打代码写点bug，看看书摸摸鱼，还学点机器学习">
+
+
+
+<title>Astropy使用笔记（三）：数据拟合 | Leyao&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Leyao&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives/">Posts</a>
+                
+                    <a class="menu-item" href="/tags/">Tags</a>
+                
+                    <a class="menu-item" href="/about/">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Leyao&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives/">Posts</a>
+                
+                    <a class="menu-item" href="/tags/">Tags</a>
+                
+                    <a class="menu-item" href="/about/">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Astropy使用笔记（三）：数据拟合</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Leyao Wei</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">二月 20, 2022&nbsp;&nbsp;21:10:09</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>Astropy版本：5.0.1</p>
+<p><kbd>astropy.modeling</kbd>的文档：<a target="_blank" rel="noopener" href="https://docs.astropy.org/en/stable/modeling/index.html">Models and Fitting (astropy.modeling) — Astropy v5.0.1</a></p>
+<p><kbd>astropy</kbd>提供了<kbd>astropy.modeling</kbd>模块用于对数据进行特定模型下的拟合，笔者结合自身的使用经验，在本文中以二维高斯模型与moffat模型拟合为例子介绍该模块的各项功能。<br>此外, <kbd>astropy.modeling</kbd>还提供了线性模型、三角函数模型、反三角函数模型等常见函数模型。</p>
+<h2 id="1-基本功能介绍——以二维高斯拟合为例"><a href="#1-基本功能介绍——以二维高斯拟合为例" class="headerlink" title="1. 基本功能介绍——以二维高斯拟合为例"></a>1. 基本功能介绍——以二维高斯拟合为例</h2><p>已知二维高斯函数的定义为：<br>$$<br>f(x, y) &#x3D; A e^{-a\left(x - x_{0}\right)^{2} -b\left(x - x_{0}\right) \left(y - y_{0}\right) -c\left(y - y_{0}\right)^{2}}<br>$$<br>其中$a,b,c$为与$x$轴、$y$轴方向上的方差及函数半长轴指向有关的常数。<br>简单的拟合程序示例如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> astropy.modeling <span class="keyword">import</span> models,fitting</span><br><span class="line"></span><br><span class="line"><span class="comment">#data为拟合数据</span></span><br><span class="line">data = data</span><br><span class="line">model_1 = models.Gaussian2D(amplitude=<span class="number">60</span>,x_mean=<span class="number">170</span>,y_mean=<span class="number">250</span>,x_stddev=<span class="number">1</span>, y_stddev=<span class="number">1</span>)</span><br><span class="line">fit_1 = fitting.LevMarLSQFitter()</span><br><span class="line">x, y=np.mgrid[:<span class="number">400</span>, :<span class="number">400</span>]</span><br><span class="line">data1 = fit_1(model_1, x, y, data)<span class="comment">#模型输出的数据</span></span><br></pre></td></tr></table></figure>
+
+<p><kbd>models.Gaussian2D()</kbd>内的各项参数为模型的初始值，对应含义如下：<br><kbd>amplitude</kbd>：高斯模型的初始峰值，即函数中的$A$。<br><kbd>x_mean</kbd>与<kbd>y_mean</kbd>：高斯模型中心点的初始位置，即函数中的$x_0$与$y_0$。<br><kbd>x_stddev</kbd>与<kbd>y_stddev</kbd>：高斯模型的初始方差，即函数中的$\sigma_x$与$\sigma_y$。</p>
+<p><kbd>fitting.LevMarLSQFitter()</kbd>为选用的拟合器（Fitter），注意不同的模型需要使用对应的拟合器。</p>
+<p><strong>限制参数</strong></p>
+<p>考虑到该模型有六个自由参数，在拟合上有一定难度，可通过限制参数减少自由度：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#使x_stddev与y_stddev保持初始值不变。</span></span><br><span class="line">gaussian = models.Gaussian2D(amplitude= <span class="number">80</span> , x_mean= <span class="number">8.5</span>, y_mean=<span class="number">9</span>, x_stddev=<span class="number">1</span>, y_stddev=<span class="number">1</span>，fixed=&#123;<span class="string">&#x27;x_stddev&#x27;</span>: <span class="literal">True</span>,<span class="string">&#x27;y_stddev&#x27;</span>:<span class="literal">True</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>或者限制参数的变化范围：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">tie_stddev</span>(<span class="params">model</span>):</span><br><span class="line">	<span class="keyword">return</span> model.y_stddev_0</span><br><span class="line"><span class="comment">#使x_stddev与y_stddev的变化范围限制在0.1到1.5之间</span></span><br><span class="line">gaussian = models.Gaussian2D(amplitude= <span class="number">180</span> , x_mean= <span class="number">8.5</span>, y_mean=<span class="number">9</span>, x_stddev=<span class="number">1.3</span>, y_stddev=<span class="number">1.3</span>,bounds=&#123;<span class="string">&#x27;x_stddev&#x27;</span>: (<span class="number">0.1</span>,<span class="number">1.5</span>),<span class="string">&#x27;y_stddev&#x27;</span>:(<span class="number">0.1</span>,<span class="number">1.5</span>)&#125;)</span><br><span class="line">gaussian.x_stddev.tied = tie_stddev</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>多个模型叠加</strong></p>
+<p>在实际处理过程中，有时需要多个模型叠加对数据进行拟合。如用二维高斯模型拟合一个天体源时，考虑到背景的影响，应在此基础上再加一个常数模型拟合。<kbd>astropy</kbd>中模型叠加的操作很简单：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">c = models.Const2D(amplitude=<span class="number">10</span>)</span><br><span class="line">gaussian = models.Gaussian2D(amplitude= <span class="number">180</span> , x_mean= <span class="number">8.5</span>, y_mean=<span class="number">9</span>, x_stddev=<span class="number">1.3</span>, y_stddev=<span class="number">1.3</span>,)</span><br><span class="line">model = gaussian + c</span><br></pre></td></tr></table></figure>
+
+<p><strong>获得拟合后的模型参数</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#获取高斯函数参数</span></span><br><span class="line">&gt;&gt;&gt;model_1.amplitude</span><br><span class="line">Parameter(<span class="string">&#x27;amplitude&#x27;</span>, value=<span class="number">200.0</span>)</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt;model_1.x_mean</span><br><span class="line">Parameter(<span class="string">&#x27;x_mean&#x27;</span>, value=<span class="number">8.5</span>)</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt;model_1.x_mean.value</span><br><span class="line"><span class="number">8.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#获取高斯函数的fwhm</span></span><br><span class="line">&gt;&gt;&gt;model_1.x_fwhm</span><br><span class="line"><span class="number">2.3548200450309493</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-PSF拟合——Moffat函数拟合"><a href="#2-PSF拟合——Moffat函数拟合" class="headerlink" title="2. PSF拟合——Moffat函数拟合"></a>2. PSF拟合——Moffat函数拟合</h2><p>在进行测光时，我们需要对星点进行拟合以获得其半高全宽，一般可采用二维高斯函数、二维moffat函数或一维moffat函数进行拟合。<br>若使用二维moffat函数，代码示例如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#x_cen与y_cen为星点在数据中的对应位置</span></span><br><span class="line"><span class="comment">#peak为星点在数据中的流量最大值</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#选定拟合的范围</span></span><br><span class="line"> analysis_radius = <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#计算出该圆形对应的各坐标点</span></span><br><span class="line"> xmin = x_cen - analysis_radius</span><br><span class="line"> xmax = x_cen + analysis_radius</span><br><span class="line"> ymin = y_cen - analysis_radius</span><br><span class="line"> ymax = y_cen + analysis_radius</span><br><span class="line"></span><br><span class="line"> x, y=np.mgrid[:<span class="number">20</span>, :<span class="number">20</span>]</span><br><span class="line"></span><br><span class="line">model = models.Moffat2D(amplitude=<span class="number">1.0</span>,x_0=<span class="number">0</span>,y_0=<span class="number">0</span>,gamma=<span class="number">2</span>,alpha=<span class="number">3.5</span>)</span><br><span class="line">fitter = fitting.SimplexLSQFitter()</span><br><span class="line">fitted_model = fitter(model, x,y,data[ymin:ymax,xmin:xmax] / peak)</span><br></pre></td></tr></table></figure>
+
+<p>考虑到有时星点的成像质量不佳，此时采用一维moffat函数拟合可取得更好的效果，其具体思路也是以目标星点为中心，划定一定大小的圆，按像素点与圆心的距离，将二维数据重新组合为以距离为变量的一维函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#x_cen与y_cen为星点在数据中的对应位置</span></span><br><span class="line"><span class="comment">#peak为星点在数据中的流量最大值</span></span><br><span class="line"></span><br><span class="line">flux_counts = []</span><br><span class="line">pixel_distance = []</span><br><span class="line"></span><br><span class="line"><span class="comment">#选定拟合的范围</span></span><br><span class="line">analysis_radius = <span class="number">10</span></span><br><span class="line"></span><br><span class="line">xmin = x_cen - analysis_radius</span><br><span class="line">xmax = x_cen + analysis_radius</span><br><span class="line">ymin = y_cen - analysis_radius</span><br><span class="line">ymax = y_cen + analysis_radius</span><br><span class="line"></span><br><span class="line">x, y=np.mgrid[:<span class="number">20</span>, :<span class="number">20</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(x_cen - analysis_radius, x_cen + analysis_radius):</span><br><span class="line">	<span class="keyword">for</span> y <span class="keyword">in</span> <span class="built_in">range</span>(y_cen - analysis_radius, y_cen + analysis_radius):</span><br><span class="line">		flux_counts.append(((data[y][x]) / peak))</span><br><span class="line">		pixel_distance.append(np.linalg.norm((x_cen - x, y_cen - y)))</span><br><span class="line"></span><br><span class="line">model = models.Moffat1D(amplitude=<span class="number">1.0</span>, x_0=<span class="number">0</span>, gamma=<span class="number">2.</span>, alpha=<span class="number">3.5</span>)</span><br><span class="line">fitter = fitting.SimplexLSQFitter()</span><br><span class="line">fitted_model = fitter(model, pixel_distance, flux_counts)</span><br></pre></td></tr></table></figure>
+
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Leyao Wei</span>
+                    </p>
+                
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Astropy/"># Astropy</a>
+                    
+                        <a href="/tags/%E5%A4%A9%E6%96%87/"># 天文</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/02608dd537.html">Astropy使用笔记（四）：FITS文件处理</a>
+            
+            
+            <a class="next" rel="next" href="/2022/02431ec03e.html">Astropy使用笔记（二）——天球坐标系</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+
+<div class="card" data-aos="fade-up">
+    <div id="utteranc-container" class="card-content">
+        <script src="https://utteranc.es/client.js"
+                repo="DenekoW/DenekoW.github.io"
+                issue-term="pathname"
+                theme="github-light"
+                crossorigin="anonymous"
+                async>
+        </script>
+    </div>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Leyao Wei | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

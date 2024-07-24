@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Leyao Wei">
+
+
+    <meta name="subtitle" content="一些地球漫游纪事罢了。">
+
+
+    <meta name="description" content="天文系本科在读，日常是打打代码写点bug，看看书摸摸鱼，还学点机器学习">
+
+
+
+<title>基于Photutils的恒星测光 | Leyao&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+            <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+        
+    
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Leyao&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives/">Posts</a>
+                
+                    <a class="menu-item" href="/tags/">Tags</a>
+                
+                    <a class="menu-item" href="/about/">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Leyao&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives/">Posts</a>
+                
+                    <a class="menu-item" href="/tags/">Tags</a>
+                
+                    <a class="menu-item" href="/about/">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">基于Photutils的恒星测光</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Leyao Wei</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">二月 8, 2022&nbsp;&nbsp;21:05:51</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>版本号：</p>
+<p>Photutils：1.3.0</p>
+<p>Astropy：4.0.1</p>
+<p>（Astropy现在已经更新到5.0.1了，是笔者当时忘了更新）</p>
+<p>在处理变星观测实验数据时，因为笔者和各位组员们实在不想手动用iraf处理四十张数据，于是笔者尝试使用pyhton的Photutils包进行自动化测光。Photutils是python的一个开源包，包括了源的自动检测及测光功能。笔者也只是使用了一些基础功能，更多玩法还需进一步探索。</p>
+<p>Photutils的tutorial写得挺不错的，值得一读：</p>
+<p><a target="_blank" rel="noopener" href="https://photutils.readthedocs.io/en/stable/getting_started.html">Getting Started with Photutils — Photutils 1.3.0</a></p>
+<p>Photutils的官方文档：</p>
+<p>&ensp;<a target="_blank" rel="noopener" href="https://photutils.readthedocs.io/en/stable/">Photutils — Photutils 1.3.0</a></p>
+<p>恒星测光的数据处理流程如下：</p>
+<ol>
+<li>对图片进行本底扣除与平场校正。</li>
+<li>对图片进行天光背景估计，扣除背景影响。</li>
+<li>查询目标星附近的参考星，使用IRAFStarFinder对图片进行目标检测，将检测得到的目标与参考星及目标星匹配。</li>
+<li>检查参考星的成像质量，剔除由于仪器原因成像未达预期的参考星。</li>
+<li>使用1D的moffat函数对目标星进行拟合，得到每张图片对应的半高全宽。</li>
+<li>对每张图片进行孔径测光。</li>
+<li>绘制光变曲线，通过正弦函数拟合得到光变周期，与查询得到的目标光变周期进行对比。</li>
+</ol>
+<p>以下是程序实现（代码不完整，主要是讲解各个功能的实现）。</p>
+<h2 id="1-导入需要的包"><a href="#1-导入需要的包" class="headerlink" title="1. 导入需要的包"></a>1. 导入需要的包</h2><p>首先是基本的包：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#导入基本的包</span></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> requests, math, glob</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line"><span class="keyword">from</span> tqdm <span class="keyword">import</span> tqdm<span class="comment">#进度条</span></span><br><span class="line"><span class="keyword">from</span> IPython.display <span class="keyword">import</span> clear_output <span class="comment"># just for Ipython notebook environment</span></span><br><span class="line"><span class="comment">#Simbad 访问</span></span><br><span class="line"><span class="keyword">from</span> astroquery.simbad <span class="keyword">import</span> Simbad</span><br><span class="line"></span><br><span class="line">warnings.filterwarnings(<span class="string">&#x27;ignore&#x27;</span>)</span><br><span class="line">sns.<span class="built_in">set</span>(style=<span class="string">&quot;darkgrid&quot;</span>, palette=<span class="string">&quot;muted&quot;</span>, color_codes=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<p>导入astropy中相关的包：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#导入astropy中需要用到的部分</span></span><br><span class="line"><span class="comment">#fit读取</span></span><br><span class="line"><span class="keyword">from</span> astropy.io <span class="keyword">import</span> fits</span><br><span class="line"></span><br><span class="line"><span class="comment">#wcs坐标</span></span><br><span class="line"><span class="keyword">from</span> astropy.wcs <span class="keyword">import</span> WCS</span><br><span class="line"><span class="keyword">from</span> astropy.coordinates <span class="keyword">import</span> SkyCoord,ICRS</span><br><span class="line"></span><br><span class="line"><span class="comment">#单位换算</span></span><br><span class="line"><span class="keyword">import</span> astropy.units <span class="keyword">as</span> u</span><br><span class="line"></span><br><span class="line"><span class="comment">#数据处理</span></span><br><span class="line"><span class="keyword">from</span> astropy.stats <span class="keyword">import</span> SigmaClip,sigma_clipped_stats</span><br><span class="line"></span><br><span class="line"><span class="comment">#PSF拟合</span></span><br><span class="line"><span class="keyword">from</span> astropy.modeling <span class="keyword">import</span> models, fitting</span><br></pre></td></tr></table></figure>
+
+<p>导入photutil中相关的包：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#导入Photutils中要用到的包</span></span><br><span class="line"><span class="comment">#数据加载</span></span><br><span class="line"><span class="keyword">from</span> Photutils.datasets <span class="keyword">import</span> load_star_image</span><br><span class="line"></span><br><span class="line"><span class="comment">#背景估计</span></span><br><span class="line"><span class="keyword">from</span> Photutils <span class="keyword">import</span> Background2D, MedianBackground</span><br><span class="line"></span><br><span class="line"><span class="comment">#星点检测</span></span><br><span class="line"><span class="keyword">from</span> Photutils.detection <span class="keyword">import</span> DAOStarFinder,IRAFStarFinder</span><br><span class="line"></span><br><span class="line"><span class="comment">#孔径测光</span></span><br><span class="line"><span class="keyword">from</span> Photutils <span class="keyword">import</span> aperture_photometry, CircularAperture,CircularAnnulus</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-数据预处理"><a href="#2-数据预处理" class="headerlink" title="2. 数据预处理"></a>2. 数据预处理</h2><p>在处理CCD得到的图像时，需要对数据进行一些改正已尽量减少CCD本身对数据的干扰，最常用的三种改正分别为本底、平场、暗流。</p>
+<p><strong>本底</strong>：在零秒曝光下且无信号输出时CCD的输出信号。因为CCD中的每一个像元不可能完全一致，在相同条件下，不同像元的初始光子计数值不一定为零，这就对CCD记录的信号产生干扰。在实际操作时，可通过选取最短的曝光时间，关闭镜头盖，拍摄多张照片叠加得到本底。</p>
+<p><strong>暗流</strong>：CCD通过光电信号进行数据读取，但因为电子自身有随机运动，在无光信号时CCD的感光部分也会输出电子。且温度越高，电子运动越剧烈，暗流起伏越大。因此在实际操作中可通过选取与拍摄天体时相同的曝光时间，关闭镜头盖曝光多张照片进行叠加得到暗流。因为拍摄过程中CCD制冷后温度较低，暗流影响比较小，在本次数据处理中忽略了暗流的影响。</p>
+<p><strong>平场</strong>：CCD的各个像元在面对均匀光源面输出时，因为灵敏度不一致，输出的光点信号会有差别。在实际操作中我们会让CCD拍摄被白炽灯均匀照射的白布、黄昏或者早晨的天光背景，经过多张叠加后获得平场。</p>
+<p>进行数据处理时，笔者将拍摄得到的本底与平场求平均，按以下公式对原始数据进行处理：<br>$$<br>output&#x3D;(data - bia)\times \frac{mean(flat-bia)}{flat-bia}<br>$$<br>为原始数据，$bia$为本底，$flat$为平场，$mean$指取平均。</p>
+<p>参考资料：<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Flat-field_correction">Flat-field correction - Wikipedia</a></p>
+<h2 id="3-天光背景扣除"><a href="#3-天光背景扣除" class="headerlink" title="3. 天光背景扣除"></a>3. 天光背景扣除</h2><p>因为Photutils采用了自动检测星点的方法，需要在检测前扣除数据的背景天光，所以要首先对数据进行了全局的天光背景估计。</p>
+<p>最简单的天光估计方法是计算整张图片的中位数作为估计值，但得到的结果未达预期，所以笔者采用了更复杂的方法：先通过高斯拟合将图片中可能的源去除，将图片按一定大小分割，估算每个小格天光背景的中位数与方均根，从而得到图片全局的天光背景估计。下图是某一张图片的天光背景估计值：</p>
+<p><img src="https://s2.loli.net/2022/02/09/anmkTsOH5pDzwgB.png" alt="background.png"></p>
+<center>
+    图1-1 天光背景全局估计示例
+</center>
+
+<p>可以看到，即使做了平场校正，图片中仍有暗角留下的痕迹，而且图片中的天光背景不是均匀分布，而是右边较亮，左边稍暗。通过这一处理我们可以把以上两个干扰因素排除。下图是扣除天光背景前与扣除天光背景后的图像对比：</p>
+<p><img src="https://s2.loli.net/2022/02/09/FbsAmSCz1B7YjvZ.png" alt="data_raw.png"></p>
+<p><img src="https://s2.loli.net/2022/02/09/iHAMcXaBIxDqjUv.png" alt="data_sub.png"></p>
+<center>
+    图1-2 天光背景扣除效果展示
+</center>
+
+<p>以下为程序实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">background_gloabal_sub</span>(<span class="params">data</span>):</span><br><span class="line">    sigma_clip = SigmaClip(sigma=<span class="number">3.</span>)</span><br><span class="line">    bkg_estimator = MedianBackground()</span><br><span class="line">    bkg = Background2D(data=data, </span><br><span class="line">                   box_size=(<span class="number">50</span>, <span class="number">50</span>), </span><br><span class="line">                   filter_size=(<span class="number">3</span>, <span class="number">3</span>),</span><br><span class="line">                   sigma_clip=sigma_clip, </span><br><span class="line">                   bkg_estimator=bkg_estimator)</span><br><span class="line">    background = bkg.background</span><br><span class="line">    std = bkg.background_rms_median</span><br><span class="line">    <span class="keyword">return</span> data - background, std</span><br></pre></td></tr></table></figure>
+
+<p>该函数可输出扣除天光背景后的数据。</p>
+<h2 id="4-参考星查询"><a href="#4-参考星查询" class="headerlink" title="4. 参考星查询"></a>4. 参考星查询</h2><p>考虑到不同照片拍摄时所处的大气环境不同，实际得到的流量也不同。为了得到准确的测光结果，在计算目标星星等时需要用其附近已知星等的参考星进行流量校正。以下程序可连接AAVSO数据库查询目标星附近的参考星并获取需要的参数。函数参数中的“field_of_view”单位为角分。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_comp_stars</span>(<span class="params">ra,dec,filter_band=<span class="string">&#x27;V&#x27;</span>,field_of_view=<span class="number">120</span></span>):</span><br><span class="line">    result = []</span><br><span class="line">    vsp_template = <span class="string">&#x27;https://www.aavso.org/apps/vsp/api/chart/?format=json&amp;fov=&#123;&#125;&amp;maglimit=12&amp;ra=&#123;&#125;&amp;dec=&#123;&#125;&#x27;</span></span><br><span class="line">    <span class="built_in">print</span>(vsp_template.<span class="built_in">format</span>(field_of_view, ra, dec))</span><br><span class="line">    r = requests.get(vsp_template.<span class="built_in">format</span>(field_of_view, ra, dec))</span><br><span class="line">    chart_id = r.json()[<span class="string">&#x27;chartid&#x27;</span>]</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;Downloaded Comparison Star Chart ID &#123;&#125;&#x27;</span>.<span class="built_in">format</span>(chart_id))</span><br><span class="line">    <span class="keyword">for</span> star <span class="keyword">in</span> r.json()[<span class="string">&#x27;photometry&#x27;</span>]:</span><br><span class="line">        comparison = &#123;&#125;</span><br><span class="line">        comparison[<span class="string">&#x27;auid&#x27;</span>] = star[<span class="string">&#x27;auid&#x27;</span>]</span><br><span class="line">        comparison[<span class="string">&#x27;ra&#x27;</span>] = star[<span class="string">&#x27;ra&#x27;</span>]</span><br><span class="line">        comparison[<span class="string">&#x27;dec&#x27;</span>] = star[<span class="string">&#x27;dec&#x27;</span>]</span><br><span class="line">        <span class="keyword">for</span> band <span class="keyword">in</span> star[<span class="string">&#x27;bands&#x27;</span>]:</span><br><span class="line">            <span class="keyword">if</span> band[<span class="string">&#x27;band&#x27;</span>] == filter_band:</span><br><span class="line">                comparison[<span class="string">&#x27;vmag&#x27;</span>] = band[<span class="string">&#x27;mag&#x27;</span>]</span><br><span class="line">                comparison[<span class="string">&#x27;error&#x27;</span>] = band[<span class="string">&#x27;error&#x27;</span>]</span><br><span class="line">        result.append(comparison)</span><br><span class="line">    <span class="keyword">return</span> result, chart_id</span><br><span class="line"></span><br><span class="line"><span class="comment">#Inspired by https://nbviewer.org/gist/dokeeffe/416e214f134d39db696c7fdac261964b</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="5-星点自动检测"><a href="#5-星点自动检测" class="headerlink" title="5. 星点自动检测"></a>5. 星点自动检测</h2><p>使用Photutils的IRAFstarfinder可自动检测输入数据中的星点：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">source_dec</span>(<span class="params">data,std</span>):</span><br><span class="line">    fwhm = <span class="number">4.0</span></span><br><span class="line">    daofind = IRAFStarFinder(fwhm = fwhm, threshold=<span class="number">3.</span> * std)</span><br><span class="line">    sources = daofind(data)</span><br><span class="line">    <span class="keyword">return</span> sources</span><br></pre></td></tr></table></figure>
+
+<p>“fwhm”为星点的半高全宽，“threshold”为在数据的起伏与背景相差多少时可以确定为源，一般取3或5倍天光背景的标准差。</p>
+<p>（Photutils还提供DAOStarfinder，笔者没有深究这两种starfinder的区别，只是选用了在本次实验数据上表现更好的那一种。）</p>
+<p>接下来是与源检测结果进行对比，找出参考星在我们数据中的位置：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">comp_stars_match</span>(<span class="params">sources, flag</span>):</span><br><span class="line">    <span class="comment">#通过目标星名字连接simbad查询其赤道坐标</span></span><br><span class="line">    astroquery_results = Simbad.query_object(STAR_NAME)</span><br><span class="line">    TARGET_RA = <span class="built_in">str</span>(astroquery_results[<span class="number">0</span>][<span class="string">&#x27;RA&#x27;</span>])</span><br><span class="line">    TARGET_DEC = <span class="built_in">str</span>(astroquery_results[<span class="number">0</span>][<span class="string">&#x27;DEC&#x27;</span>]).replace(<span class="string">&#x27;+&#x27;</span>,<span class="string">&#x27;&#x27;</span>).replace(<span class="string">&#x27;-&#x27;</span>,<span class="string">&#x27;&#x27;</span>)</span><br><span class="line">    <span class="comment">#通过赤道坐标获取参考星的信息</span></span><br><span class="line">    results, chart_id = get_comp_stars(TARGET_RA, TARGET_DEC)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;&#123;&#125; comp stars found&#x27;</span>.<span class="built_in">format</span>(<span class="built_in">len</span>(results)))</span><br><span class="line">    results.append(&#123;<span class="string">&#x27;auid&#x27;</span>: <span class="string">&#x27;target&#x27;</span>, <span class="string">&#x27;ra&#x27;</span>: TARGET_RA, <span class="string">&#x27;dec&#x27;</span>: TARGET_DEC&#125;)</span><br><span class="line">	<span class="comment">#与检测结果进行对比</span></span><br><span class="line">    <span class="keyword">for</span> star <span class="keyword">in</span> results:</span><br><span class="line">        star_coord = SkyCoord(star[<span class="string">&#x27;ra&#x27;</span>],star[<span class="string">&#x27;dec&#x27;</span>], unit=(u.hourangle, u.deg))</span><br><span class="line">        xy = SkyCoord.to_pixel(star_coord, wcs=wcs, origin=<span class="number">1</span>)</span><br><span class="line">        x = xy[<span class="number">0</span>].item(<span class="number">0</span>)</span><br><span class="line">        y = xy[<span class="number">1</span>].item(<span class="number">0</span>)</span><br><span class="line">        <span class="comment">#在以对应坐标为中心，半径为50像素的圆内搜索目标</span></span><br><span class="line">        <span class="keyword">for</span> source <span class="keyword">in</span> sources:</span><br><span class="line">            <span class="keyword">if</span>(source[<span class="string">&#x27;xcentroid&#x27;</span>]-<span class="number">50</span> &lt; x &lt; source[<span class="string">&#x27;xcentroid&#x27;</span>]+<span class="number">50</span>) <span class="keyword">and</span> source[<span class="string">&#x27;ycentroid&#x27;</span>]-<span class="number">50</span> &lt; y &lt; source[<span class="string">&#x27;ycentroid&#x27;</span>]+<span class="number">50</span>:</span><br><span class="line">                star[<span class="string">&#x27;x&#x27;</span>] = x</span><br><span class="line">                star[<span class="string">&#x27;y&#x27;</span>] = y</span><br><span class="line">                star[<span class="string">&#x27;peak&#x27;</span>] = source[<span class="string">&#x27;peak&#x27;</span>]</span><br><span class="line">    results = pd.DataFrame(results)</span><br><span class="line">    <span class="keyword">return</span> results</span><br></pre></td></tr></table></figure>
+
+<h2 id="6-PSF拟合得到FWHM"><a href="#6-PSF拟合得到FWHM" class="headerlink" title="6. PSF拟合得到FWHM"></a>6. PSF拟合得到FWHM</h2><p>为了得到孔径测光的孔径大小，需要对星点进行PSF拟合得到其更准确的半高全宽，具体流程为选定星点周围10个像素点范围内的点，将其按到中心的距离转化为一维数据，再放入模型中进行拟合，得到FWHM：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">moffat_fitting</span>(<span class="params">results, data</span>):</span><br><span class="line">    isource = results.iloc[<span class="number">1</span>]<span class="comment">#取目标星为fwhm计算对象</span></span><br><span class="line"></span><br><span class="line">    flux_counts = []</span><br><span class="line">    pixel_distance = []</span><br><span class="line"></span><br><span class="line">    analysis_radius = <span class="number">10</span></span><br><span class="line">    x_cen = <span class="built_in">int</span>(isource[<span class="string">&#x27;x&#x27;</span>])</span><br><span class="line">    y_cen = <span class="built_in">int</span>(isource[<span class="string">&#x27;y&#x27;</span>])</span><br><span class="line">    xmin = x_cen - analysis_radius</span><br><span class="line">    xmax = x_cen + analysis_radius</span><br><span class="line">    ymin = y_cen - analysis_radius</span><br><span class="line">    ymax = y_cen + analysis_radius</span><br><span class="line">    x, y=np.mgrid[:<span class="number">20</span>, :<span class="number">20</span>]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Pixels around detection loop</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(x_cen - analysis_radius, x_cen + analysis_radius):</span><br><span class="line">        <span class="keyword">for</span> y <span class="keyword">in</span> <span class="built_in">range</span>(y_cen - analysis_radius, y_cen + analysis_radius):</span><br><span class="line">            flux_counts.append(((data[y][x]) / isource[<span class="string">&#x27;peak&#x27;</span>]))</span><br><span class="line">            pixel_distance.append(np.linalg.norm((isource[<span class="string">&#x27;x&#x27;</span>] - x, isource[<span class="string">&#x27;y&#x27;</span>] - y)))</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    <span class="comment">#model_init = models.Moffat2D(amplitude=1.0,x_0=0,y_0=0,gamma=2,alpha=3.5)</span></span><br><span class="line">    model_init = models.Moffat1D(amplitude=<span class="number">1.0</span>, x_0=<span class="number">0</span>, gamma=<span class="number">2.</span>, alpha=<span class="number">3.5</span>)</span><br><span class="line">    fitter = fitting.SimplexLSQFitter()</span><br><span class="line">    <span class="comment">#fitted_model = fitter(model_init, x,y,data[ymin:ymax,xmin:xmax]/ isource[&#x27;peak&#x27;])</span></span><br><span class="line">    fitted_model = fitter(model_init, pixel_distance, flux_counts)</span><br><span class="line">    <span class="keyword">return</span> fitted_model.fwhm</span><br></pre></td></tr></table></figure>
+
+<p>笔者也尝试过使用2维Moffat函数拟合，但测光效果不是很好。</p>
+<h2 id="7-孔径测光"><a href="#7-孔径测光" class="headerlink" title="7. 孔径测光"></a>7. 孔径测光</h2><p>在进行孔径测光时，笔者选择了1.5倍FWHM作为孔径半径，天光估计环为内圈半径为2倍FWHM，外圈半径为5倍FWHM。</p>
+<p>其中，仪器星等的计算公式为：<br>$$<br>m&#x3D;-2.5log\sum Flux<br>$$<br>$Flux$为孔径内流量总和。根据目标星与参考星的仪器星等平均值之差，即可绘制目标星的光变曲线。</p>
+<p>而我们根据参考星的V波段星等，可以对目标星进行定标与流量校正，假设各天体仪器测得星等为$M_I$，标准星等为$M$，其计算公式为：<br>$$<br>offset&#x3D;M_I-M<br>$$<br>对各参考星的$offset$求平均，即可对目标星进行流量校正：<br>$$<br>M &#x3D; M_I-Average(offset)<br>$$<br>下面为程序实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">aperture_p</span>(<span class="params">fwhm,positions,data,results</span>):</span><br><span class="line">    aperture_radius =fwhm * <span class="number">1.5</span></span><br><span class="line">    annuls_r_in = fwhm * <span class="number">2</span></span><br><span class="line">    annuls_r_out = fwhm * <span class="number">5</span></span><br><span class="line"></span><br><span class="line">    aperture = CircularAperture(positions, r=aperture_radius)</span><br><span class="line">    annulus_aperture = CircularAnnulus(positions, r_in=annuls_r_in, r_out=annuls_r_out)</span><br><span class="line">    annulus_masks = annulus_aperture.to_mask(method=<span class="string">&#x27;center&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    bkg_median = []</span><br><span class="line">    <span class="keyword">for</span> mask <span class="keyword">in</span> annulus_masks:</span><br><span class="line">        annulus_data = mask.multiply(data)</span><br><span class="line">        annulus_data_1d = annulus_data[mask.data &gt; <span class="number">0</span>]</span><br><span class="line">        _, median_sigclip, _ = sigma_clipped_stats(annulus_data_1d)</span><br><span class="line">        bkg_median.append(median_sigclip)</span><br><span class="line">    bkg_median = np.array(bkg_median)</span><br><span class="line">    phot = aperture_photometry(data, aperture)</span><br><span class="line">    phot[<span class="string">&#x27;annulus_median&#x27;</span>] = bkg_median</span><br><span class="line">    phot[<span class="string">&#x27;aper_bkg&#x27;</span>] = bkg_median * aperture.area</span><br><span class="line">    phot[<span class="string">&#x27;aper_sum_bkgsub&#x27;</span>] = phot[<span class="string">&#x27;aperture_sum&#x27;</span>] - phot[<span class="string">&#x27;aper_bkg&#x27;</span>]</span><br><span class="line">    phot[<span class="string">&#x27;instrumental_mag&#x27;</span>] = -<span class="number">2.5</span> * np.log10(phot[<span class="string">&#x27;aper_sum_bkgsub&#x27;</span>])</span><br><span class="line">    phot[<span class="string">&#x27;vmag&#x27;</span>] = results[<span class="string">&#x27;vmag&#x27;</span>]</span><br><span class="line">    target_sub =    phot[<span class="string">&#x27;instrumental_mag&#x27;</span>][<span class="number">1</span>] - (phot[<span class="string">&#x27;instrumental_mag&#x27;</span>][<span class="number">0</span>] + phot[<span class="string">&#x27;instrumental_mag&#x27;</span>][<span class="number">2</span>]) / <span class="number">2</span> </span><br><span class="line">    offset0 = phot[<span class="string">&#x27;instrumental_mag&#x27;</span>][<span class="number">0</span>] - phot[<span class="string">&#x27;vmag&#x27;</span>][<span class="number">0</span>]</span><br><span class="line">    offset1 = phot[<span class="string">&#x27;instrumental_mag&#x27;</span>][<span class="number">2</span>] - phot[<span class="string">&#x27;vmag&#x27;</span>][<span class="number">2</span>]</span><br><span class="line">    target_mag = phot[<span class="string">&#x27;instrumental_mag&#x27;</span>][<span class="number">1</span>] - (offset0 + offset1)/<span class="number">2</span></span><br><span class="line">    <span class="keyword">return</span> [target_sub, target_mag, offset0, offset1]</span><br></pre></td></tr></table></figure>
+
+<h2 id="8-整体实现"><a href="#8-整体实现" class="headerlink" title="8. 整体实现"></a>8. 整体实现</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">time_fit = []</span><br><span class="line">sub = []</span><br><span class="line">mag_res = []</span><br><span class="line">fwhm_res = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> tqdm(<span class="built_in">range</span>(<span class="number">1</span>,<span class="number">41</span>)):</span><br><span class="line">    <span class="keyword">if</span> i &lt; <span class="number">10</span>:</span><br><span class="line">        <span class="keyword">with</span> fits.<span class="built_in">open</span>(IO_data + filename + <span class="string">&#x27;0&#x27;</span> + <span class="built_in">str</span>(i) + <span class="string">&#x27;.fit&#x27;</span>) <span class="keyword">as</span> hdul:</span><br><span class="line">            data = (np.array(hdul[<span class="number">0</span>].data) - bia_mean) * np.mean(flat_mean - bia_mean) / (flat_mean - bia_mean)<span class="comment">#平场校正</span></span><br><span class="line">            time_fit.append(hdul[<span class="number">0</span>].header[<span class="string">&#x27;DATE-OBS&#x27;</span>][<span class="number">11</span>:])<span class="comment">#记录时间</span></span><br><span class="line">            header = hdul[<span class="number">0</span>].header</span><br><span class="line">            wcs = WCS(header)</span><br><span class="line">            hdul.close()</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">with</span> fits.<span class="built_in">open</span>(IO_data + filename + <span class="built_in">str</span>(i) + <span class="string">&#x27;.fit&#x27;</span>) <span class="keyword">as</span> hdul:</span><br><span class="line">            data = (np.array(hdul[<span class="number">0</span>].data) - bia_mean) * np.mean(flat_mean - bia_mean) / (flat_mean - bia_mean)<span class="comment">#平场</span></span><br><span class="line">            time_fit.append(hdul[<span class="number">0</span>].header[<span class="string">&#x27;DATE-OBS&#x27;</span>][<span class="number">11</span>:])<span class="comment">#记录时间</span></span><br><span class="line">            header = hdul[<span class="number">0</span>].header</span><br><span class="line">            wcs = WCS(header)</span><br><span class="line">            hdul.close()</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#估算并扣除背景</span></span><br><span class="line">    data,std = background_gloabal_sub(data)</span><br><span class="line"></span><br><span class="line">    <span class="comment">#检测星点</span></span><br><span class="line">    sources = source_dec(data,std)</span><br><span class="line">    results = comp_stars_match(sources,i)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(results.isnull().values.<span class="built_in">any</span>()==<span class="literal">True</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Cannot match the comparision star in fit &quot;</span>,i)</span><br><span class="line">        mag_res.append([np.nan,np.nan,np.nan,np.nan])</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">    positions = (results.loc[:,<span class="string">&#x27;x&#x27;</span>:<span class="string">&#x27;y&#x27;</span>]) </span><br><span class="line"></span><br><span class="line">    <span class="comment">#半高全宽拟合</span></span><br><span class="line">    fwhm = moffat_fitting(results, data)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(np.isnan(fwhm)==<span class="literal">True</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;fwhm nan fit &quot;</span>,i)</span><br><span class="line">        mag_res.append([np.nan,np.nan,np.nan,np.nan])</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;fwhm=&quot;</span>,fwhm)</span><br><span class="line">    fwhm_res.append(fwhm)</span><br><span class="line"></span><br><span class="line">    <span class="comment">#孔径测光</span></span><br><span class="line">    mag_res.append(aperture_p(fwhm, positions, data, results))</span><br><span class="line">    clear_output()</span><br></pre></td></tr></table></figure>
+
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Leyao Wei</span>
+                    </p>
+                
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E5%A4%A9%E6%96%87/"># 天文</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/02384bc663.html">Astropy使用笔记（一）——常数与单位换算</a>
+            
+            
+            <a class="next" rel="next" href="/2022/02adb944b.html">Hexo+Next搭建个人博客的踩坑之路（持续更新）</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+
+<div class="card" data-aos="fade-up">
+    <div id="utteranc-container" class="card-content">
+        <script src="https://utteranc.es/client.js"
+                repo="DenekoW/DenekoW.github.io"
+                issue-term="pathname"
+                theme="github-light"
+                crossorigin="anonymous"
+                async>
+        </script>
+    </div>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Leyao Wei | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

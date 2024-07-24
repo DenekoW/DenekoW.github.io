@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Leyao Wei">
+
+
+    <meta name="subtitle" content="一些地球漫游纪事罢了。">
+
+
+    <meta name="description" content="天文系本科在读，日常是打打代码写点bug，看看书摸摸鱼，还学点机器学习">
+
+
+
+<title>Astropy使用笔记（四）：FITS文件处理 | Leyao&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Leyao&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives/">Posts</a>
+                
+                    <a class="menu-item" href="/tags/">Tags</a>
+                
+                    <a class="menu-item" href="/about/">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Leyao&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives/">Posts</a>
+                
+                    <a class="menu-item" href="/tags/">Tags</a>
+                
+                    <a class="menu-item" href="/about/">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Astropy使用笔记（四）：FITS文件处理</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Leyao Wei</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">二月 28, 2022&nbsp;&nbsp;22:12:06</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>Astropy版本： 5.0.1</p>
+<p>FITS(Flexible Image Transport System)，为天文学界中通用的数据传输格式，由IAU指定了统一的标准。而著名的天文工具包Astropy中就提供了读取与处理FITS文件的工具，可将读取的FIT转化为ndarray在程序中进行后续处理。</p>
+<p><code>astropy.io.fits</code>的文档请参见<a target="_blank" rel="noopener" href="https://docs.astropy.org/en/stable/io/fits/index.html">FITS File Handling (astropy.io.fits) — Astropy v5.0.1</a></p>
+<p>本文主要关注具体读取FITS的方法，FITS文件的其他介绍可参照其他资料。</p>
+<h2 id="1-FITS文件基本操作"><a href="#1-FITS文件基本操作" class="headerlink" title="1. FITS文件基本操作"></a>1. FITS文件基本操作</h2><p>FITS文件打开：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> astropy.io <span class="keyword">import</span> fits</span><br><span class="line"></span><br><span class="line">IO = <span class="string">&#x27;./...&#x27;</span></span><br><span class="line">hdulist = fits.<span class="built_in">open</span>(IO +<span class="string">&#x27;155_0.fits&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+
+<p>此时即可查阅FITS文件中的基本信息。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看文件基本信息</span></span><br><span class="line"><span class="built_in">print</span>(hdulist.info())</span><br><span class="line"></span><br><span class="line">Filename: ./<span class="number">155_0.</span>fits </span><br><span class="line">No.   Name Ver    <span class="type">Type</span>     Cards Dimensions      Format</span><br><span class="line"><span class="number">0</span>   PRIMARY <span class="number">1</span>   PrimaryHDU   <span class="number">4</span>       () </span><br><span class="line"><span class="number">1</span>           <span class="number">1</span>   BinTableHDU  <span class="number">21</span>    40R x 6C [J, J, J, J, J, 41943E] </span><br><span class="line"><span class="literal">None</span></span><br></pre></td></tr></table></figure>
+
+
+<p>可以看到这个FITS文件中中有两组数据，可进行提取查看，一般第一组（标号为0）数据只有头文件，没有数据：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt;hdulist[<span class="number">0</span>].header</span><br><span class="line"></span><br><span class="line">SIMPLE =                T / conforms to FITS standard </span><br><span class="line">BITPIX =                <span class="number">8</span> / array data <span class="built_in">type</span> </span><br><span class="line">NAXIS =                 <span class="number">0</span> / number of array dimensions </span><br><span class="line">EXTEND =                T </span><br><span class="line">END</span><br></pre></td></tr></table></figure>
+
+
+<p>这是标题记录文件，记录该FITS文件的基本情况。各行释义如下：</p>
+<ul>
+<li><code>SIMPLE=T</code>：T为逻辑值True，意为该文件的数据记录与标题记录都符合FITS文件格式约定。</li>
+<li><code>BITPIX=8</code>：指明每一个值在内存中所占位数为8。</li>
+<li><code>NAXIS=0</code>：数据维数，该处说明原数据只有一维。若数据为多维数组，还会有<code>NAXIS1</code>、<code>NAXIS2</code>等说明各维度的数据大小。<br>不同的FITS文件的标题记录文件中会有不同信息，可查看相应注释了解。<br>查看第二组数据可得到数据的相关信息，其中具体的观测数据也储存在第二组数据中。<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt;hdulist[<span class="number">1</span>].header</span><br><span class="line"></span><br><span class="line">XTENSION= <span class="string">&#x27;BINTABLE&#x27;</span> / binary table extension </span><br><span class="line">BITPIX = <span class="number">8</span> / array data <span class="built_in">type</span> </span><br><span class="line">NAXIS = <span class="number">2</span> / number of array dimensions </span><br><span class="line">NAXIS1 = <span class="number">167792</span> / length of dimension <span class="number">1</span> </span><br><span class="line">NAXIS2 = <span class="number">40</span> / length of dimension <span class="number">2</span> </span><br><span class="line">PCOUNT = <span class="number">0</span> / number of group parameters </span><br><span class="line">GCOUNT = <span class="number">1</span> / number of groups </span><br><span class="line">TFIELDS = <span class="number">6</span> / number of table fields </span><br><span class="line">TTYPE1 = <span class="string">&#x27;EXPOSURE&#x27;</span> <span class="comment">#参数名</span></span><br><span class="line">TFORM1 = <span class="string">&#x27;J &#x27;</span> <span class="comment">#参数类型</span></span><br><span class="line">TUNIT1 = <span class="string">&#x27;s &#x27;</span> <span class="comment">#参数单位</span></span><br><span class="line">TTYPE2 = <span class="string">&#x27;NCHAN &#x27;</span> </span><br><span class="line">TFORM2 = <span class="string">&#x27;J &#x27;</span> </span><br><span class="line">TTYPE3 = <span class="string">&#x27;CHAN_BW &#x27;</span> </span><br><span class="line">TFORM3 = <span class="string">&#x27;J &#x27;</span> </span><br><span class="line">TTYPE4 = <span class="string">&#x27;SPAN &#x27;</span> </span><br><span class="line">TFORM4 = <span class="string">&#x27;J &#x27;</span> </span><br><span class="line">TTYPE5 = <span class="string">&#x27;TIMESPAN&#x27;</span> </span><br><span class="line">TFORM5 = <span class="string">&#x27;J &#x27;</span> </span><br><span class="line">TTYPE6 = <span class="string">&#x27;DATA &#x27;</span> </span><br><span class="line">TFORM6 = <span class="string">&#x27;41943E &#x27;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>头文件中各项含义在上文与注释中介绍。可根据头文件中的信息读取数据与各个参数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">data1 = hdulist[<span class="number">1</span>].data <span class="comment">#数据</span></span><br><span class="line">header1 = hdulist[<span class="number">1</span>].header</span><br><span class="line"></span><br><span class="line">nline = header1[<span class="string">&#x27;NAXIS2&#x27;</span>]<span class="comment">#行数</span></span><br><span class="line">dt = data1[<span class="string">&#x27;EXPOSURE&#x27;</span>][<span class="number">0</span>] <span class="comment">#采样时间</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+
+<p><code>data1</code>中的数组可化为ndarray数组以便进行后续处理。在实际使用过程中，因为FITS文件比较大，若在打开后不及时关闭，在后续处理中会导致电脑卡死（笔者血泪经验），所以在进行FITS文件操作时一定要养成随手关文件的好习惯：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdulist.close()<span class="comment">#关闭fit文件</span></span><br></pre></td></tr></table></figure>
+
+
+<p>在批量处理大量FITS文件时，可用下列方法打开文件，更安全：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> tqdm(<span class="built_in">range</span>(<span class="number">1</span>,<span class="number">41</span>)):</span><br><span class="line">	<span class="keyword">if</span> i &lt; <span class="number">10</span>:</span><br><span class="line">		<span class="keyword">with</span> fits.<span class="built_in">open</span>(IO_data + filename + <span class="string">&#x27;0&#x27;</span> + <span class="built_in">str</span>(i) + <span class="string">&#x27;.fit&#x27;</span>) <span class="keyword">as</span> hdul:</span><br><span class="line">			data = (np.array(hdul[<span class="number">0</span>].data) - bia_mean) * np.mean(flat_mean - bia_mean) / (flat_mean - bia_mean)</span><br><span class="line">			time_fit.append(hdul[<span class="number">0</span>].header[<span class="string">&#x27;DATE-OBS&#x27;</span>][<span class="number">11</span>:])<span class="comment">#记录时间</span></span><br><span class="line">			header = hdul[<span class="number">0</span>].header</span><br><span class="line">			wcs = WCS(header)</span><br><span class="line">			<span class="comment">#提取要使用的数据</span></span><br><span class="line">			hdul.close()<span class="comment">#关闭文件</span></span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+<p>即在<code>with...</code>后提取出后续要用到的数据中马上关闭该fit文件，节省内存。</p>
+<h2 id="2-FITS文件画图"><a href="#2-FITS文件画图" class="headerlink" title="2. FITS文件画图"></a>2. FITS文件画图</h2><p>有些FITS文件数据里会自带wcs坐标，在使用该数据画图时可利用wcs坐标使图像附带坐标信息：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> astropy <span class="keyword">import</span> wcs</span><br><span class="line">w = wcs.WCS(hdulist[<span class="number">0</span>].header)</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="number">8</span>,<span class="number">6</span>))</span><br><span class="line">plt.subplot(projection=w)</span><br><span class="line">im = plt.imshow(data,cmap=<span class="string">&#x27;CMRmap&#x27;</span>)</span><br><span class="line">plt.colorbar(im)</span><br><span class="line"><span class="comment">#plt.xlabel(&#x27;Right Ascension&#x27;)</span></span><br><span class="line">plt.ylabel(<span class="string">&#x27;Declination&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>2022&#x2F;3&#x2F;21更新<br>若要画多张子图，可在设置子图时添加以下参数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fig,ax = plt.subplots(<span class="number">1</span>,<span class="number">2</span>,figsize=(<span class="number">10</span>,<span class="number">8</span>),subplot_kw=&#123;<span class="string">&#x27;projection&#x27;</span>: wcs&#125;)</span><br></pre></td></tr></table></figure>
+<p>即可为每一张子图添加wcs坐标。<br>（感谢<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/33942233/how-do-i-change-matplotlibs-subplot-projection-of-an-existing-axis">python - How do I change matplotlib’s subplot projection of an existing axis? - Stack Overflow</a>）</p>
+<p>对于FITS文件处理，笔者也只是刚刚入门，此后会根据学习进度继续更新本文。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Leyao Wei</span>
+                    </p>
+                
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Astropy/"># Astropy</a>
+                    
+                        <a href="/tags/%E5%A4%A9%E6%96%87/"># 天文</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/03ed5a3900.html">光谱视向速度的参考系转换</a>
+            
+            
+            <a class="next" rel="next" href="/2022/0214e2f00d.html">Astropy使用笔记（三）：数据拟合</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+
+<div class="card" data-aos="fade-up">
+    <div id="utteranc-container" class="card-content">
+        <script src="https://utteranc.es/client.js"
+                repo="DenekoW/DenekoW.github.io"
+                issue-term="pathname"
+                theme="github-light"
+                crossorigin="anonymous"
+                async>
+        </script>
+    </div>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Leyao Wei | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
