@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Leyao Wei">
+
+
+    <meta name="subtitle" content="一些地球漫游纪事罢了。">
+
+
+    <meta name="description" content="天文系本科在读，日常是打打代码写点bug，看看书摸摸鱼，还学点机器学习">
+
+
+
+<title>Research | Leyao&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Leyao&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/about/">About</a>
+                
+                    <a class="menu-item" href="/Blog/">Blog</a>
+                
+                    <a class="menu-item" href="/research/">Research</a>
+                
+                    <a class="menu-item" href="/desi-cosmos/">DESI Cosmos</a>
+                
+                    <a class="menu-item" href="/tags/">Tags</a>
+                
+                    <a class="menu-item" href="/archives/">Posts</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Leyao&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/about/">About</a>
+                
+                    <a class="menu-item" href="/Blog/">Blog</a>
+                
+                    <a class="menu-item" href="/research/">Research</a>
+                
+                    <a class="menu-item" href="/desi-cosmos/">DESI Cosmos</a>
+                
+                    <a class="menu-item" href="/tags/">Tags</a>
+                
+                    <a class="menu-item" href="/archives/">Posts</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    <article class="post-wrap page">
+        
+        <h2 class="post-title">Research</h2>
+        
+        <section class="post-content">
+            <h2 id="DESI-宇宙切片"><a href="#DESI-宇宙切片" class="headerlink" title="DESI 宇宙切片"></a>DESI 宇宙切片</h2><p>一个基于 DESI DR1 真实数据的交互式三维可视化 demo。样本包含 3,500 个目标、25 个相邻 HEALPix，以及每个目标的合并光谱。</p>
+<ul>
+<li>按红移共动距离展示三维分布，颜色表示红移，星点大小表示 FastSpec 恒星质量。</li>
+<li>可组合筛选红移、恒星质量和目标类型。</li>
+<li>点击星点可查看光谱、红移、坐标、共动距离与恒星质量。</li>
+</ul>
+<p><strong><a href="/desi-cosmos/">打开 DESI 宇宙切片 →</a></strong></p>
+<p>数据来源：<a target="_blank" rel="noopener" href="https://data.desi.lbl.gov/public/dr1/">DESI Data Release 1</a>；恒星质量来自 FastSpecFit Iron v3.0 <code>fastspec</code> 增值目录。该页面为分层抽样演示，不代表全天或完整星系样本。</p>
+
+        </section>
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Leyao Wei | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a>
+        |
+        <!-- 访客数量 -->
+          
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<span class="site-uv">
+    总访客量:
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>&nbsp;
+
+
+<span class="site-pv">
+    总访问量:
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+  
+           </span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
